@@ -1,0 +1,265 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Ручная проверка судьи</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--mute:#5d6470;--line:#dde1e7;--ok:#1f7a4d;--mid:#a86b00;--bad:#b3261e;--sel:#e8f0fe}
+@media (prefers-color-scheme:dark){:root{--bg:#15171b;--card:#1e2126;--ink:#e6e8eb;--mute:#9aa1ac;--line:#30343b;--sel:#233044}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+main{max-width:880px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px} .q{font-weight:600}
+pre{white-space:pre-wrap;font:13px/1.45 ui-monospace,Consolas,monospace;background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto}
+.v.correct{color:var(--ok)} .v.partial{color:var(--mid)} .v.incorrect{color:var(--bad)} .c{color:var(--mute)}
+.btns button{margin-right:8px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.btns button.on{background:var(--sel);border-color:#6b8fd6}
+#out{width:100%;min-height:70px;font:13px ui-monospace,monospace}
+</style></head><body><main>
+<h1>Ручная проверка судьи — 10 ответов</h1>
+<p>Прочитай эталон и ответ, нажми «согласен» или «не согласен» с вердиктом судьи. Внизу — строка итога: скопируй её в чат.</p>
+
+<section class="card" data-id="o05" data-verdict="incorrect">
+  <h2>o05 · <span class="v incorrect">судья: неверно</span></h2>
+  <p class="q">Растёт consumer lag в Kafka на топике payments. Как разобраться?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет (Kafka в корпусе не упоминается): правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В runbook&#x27;ах для решения проблемы роста consumer lag в Kafka на топике payments нет прямого описания действий. Однако можно предложить следующие шаги:
+
+1. Проверить состояние consumers в Kafka:
+   ```bash
+   kafkacat -L -b &lt;broker_address&gt; -t payments
+   ```
+
+2. Проверить метрики consumer lag в Grafana:
+   - Панель `Kafka Consumers` → график `consumer_lag` для топика `payments`.
+
+3. Проверить логи消费者的拉高问题，可以参考以下步骤：
+
+1. 检查Kafka消费者的状态：
+   ```bash
+   kafkacat -L -b &lt;broker_address&gt; -t payments
+   ```
+
+2. 在Grafana中检查消费者滞后的指标：
+   - 仪表板 `Kafka Consumers` → 图表 `consumer_lag` 对于主题 `payments`。
+
+3. 检查消费者日志：
+   ```bash
+   docker logs &lt;consumer_container_name&gt; -f
+   ```
+
+4. 检查Kafka Broker的日志：
+   ```bash
+   docker logs &lt;broker_container_name&gt; -f
+   ```
+
+5. 使用LogQL查询Loki中的相关日志：
+   ```logql
+   {job=&quot;kafka-consumer&quot;} |= &quot;lag&quot; | json
+   ```
+
+6. 检查Kafka配置和资源使用情况：
+   ```bash
+   kafkacat -P -b &lt;broker_address&gt; -t payments
+   ```
+
+这些步骤可以帮助你诊断和解决Kafka消费者滞后的问题。请注意，具体的容器名称和地址需要根据实际情况进行替换。</pre></details>
+  <p class="c">Комментарий судьи: Kafka не упоминается в корпусе, но ассистент выдал набор kafkacat-команд и метрик, которых нет в runbook&#x27;ах.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o09" data-verdict="correct">
+  <h2>o09 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как включить сотрудникам двухфакторную аутентификацию для входа в админку?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В提供的runbook片段中没有关于如何为管理员界面启用双因素认证的信息。因此，根据给出的文档，这个问题的答案是：在提供的runbook片段中没有相关信息。
+
+如果你需要了解如何配置双因素认证，请参考公司的安全政策或使用相关的身份验证服务提供商的文档。通常这涉及到配置身份验证服务器（如Google Authenticator、Authy等）以及更新登录流程以包含第二步验证。</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o10" data-verdict="correct">
+  <h2>o10 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как оплачиваются дежурства в выходные и праздники?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать условия.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В提供的runbook片段中没有关于如何在周末和节假日支付值班费用的信息。因此，无法从这些runbook片段中获取相关信息。
+
+参考的runbook片段：[RB-01], [RB-02], [RB-03], [RB-04], [RB-07]</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q02" data-verdict="partial">
+  <h2>q02 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Эквайер иногда присылает одно и то же событие дважды. Как на уровне базы защититься от двойного зачисления?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-01: в webhook_events должно быть ограничение UNIQUE(event_id), а обработчик делает INSERT ... ON CONFLICT DO NOTHING до обновления баланса; если ограничения нет — миграция ALTER TABLE webhook_events ADD CONSTRAINT uq_event_id UNIQUE (event_id). Откат уже случившегося двойного зачисления — только через L3 с согласованием финансового контроля.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для защиты от двойного зачисления в базе данных можно добавить уникальное ограничение на поле `event_id` в таблице `webhook_events`. Также следует использовать индекс уникальности для поля `idempotency_key`, если используется такой ключ для идемпотентности.
+
+Вот как это можно сделать:
+
+1. Добавить уникальное ограничение на поле `event_id`:
+```sql
+ALTER TABLE webhook_events ADD CONSTRAINT uq_event_id UNIQUE (event_id);
+```
+
+2. Добавить уникальный индекс для поля `idempotency_key` (если используется):
+```sql
+CREATE UNIQUE INDEX idx_idempotency_key ON webhook_events (idempotency_key);
+```
+
+Эти изменения помогут предотвратить двойное зачисление событий. Опираюсь на runbook с ID RB-01.</pre></details>
+  <p class="c">Комментарий судьи: Пропущено требование INSERT ... ON CONFLICT DO NOTHING до обновления баланса из RB-01.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q07" data-verdict="partial">
+  <h2>q07 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Рубли списались, а доллары на карту не пришли, в приложении статус processing. В логах conversion-service: FX rate fetch failed, status=503. Как чинить?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-03: переключить conversion-service на резервного провайдера (APP_FX_PROVIDER=fx-provider-fallback в окружении сервиса, config:clear, рестарт), затем запустить компенсацию зависших саг: php artisan saga:compensate --status=FX_PENDING --older-than=5; после восстановления основного провайдера вернуть fx-provider-main и уведомить пользователей.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для решения этой проблемы следует следовать шагам из runbook&#x27;а RB-03:
+
+1. **Переключить conversion-service на резервного FX-провайдера:**
+   ```bash
+   docker exec conversion-service php artisan config:clear
+   docker restart conversion-service
+   ```
+
+2. **Запустить компенсирующую транзакцию:**
+   ```bash
+   php artisan saga:compensate --status=FX_PENDING --older-than=5
+   ```
+
+3. **После восстановления основного провайдера:**
+   ```bash
+   docker exec conversion-service php artisan config:clear
+   docker restart conversion-service
+   ```
+
+4. **Уведомить пользователей.**
+
+Опираюсь на runbook&#x27;и RB-03 и RB-07.</pre></details>
+  <p class="c">Комментарий судьи: Пропущена установка APP_FX_PROVIDER=fx-provider-fallback в окружении сервиса — без неё рестарт вернёт исходного провайдера.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q18" data-verdict="correct">
+  <h2>q18 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Ночная сверка показала расхождение с банковским реестром на 23,52 ₽ по 4 транзакциям. Какие типичные причины?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-07: курс фиксируется на created_at, а банк считает по курсу на settlement_at (+5–30 мин); округление: PHP round($amount, 2) против банковского TRUNCATE(amount, 2).</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Типичные причины расхождения с банковским реестром могут быть связаны с различиями в моменте фиксации курса и методами округления. Конкретно:
+
+1. Курс фиксируется на `created_at`, а банк считает по курсу `settlement_at` (+5–30 мин).
+2. PHP `round($amount, 2)` против банковского `TRUNCATE(amount, 2)`.
+
+Опираюсь на фрагменты runbook&#x27;ов RB-07 и RB-07.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q25" data-verdict="partial">
+  <h2>q25 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">p95 ответов ассистента выросла до 15 секунд, в логах vLLM preemption. Что делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-10: временно снизить конкурентность запросов к фасаду (keepalive в upstream Nginx); перезапустить vLLM с меньшим --max-num-seqs (4 вместо 16) — флагом CLI, не переменной окружения; проверить, что p95 опустилась ниже 4 с; постфактум подобрать --max-model-len и длину RAG-чанков.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>На основе предоставленных runbook&#x27;ов рекомендовано следующее действие:
+
+1. Снизить concurrency (временный workaround):
+   ```nginx
+   # /etc/nginx/conf.d/facade.conf — временно
+   upstream facade {
+       server 127.0.0.1:8001;
+       keepalive 4;  # было 16
+   }
+   ```
+   ```bash
+   nginx -t &amp;&amp; nginx -s reload
+   ```
+
+Опираюсь на runbook с ID [RB-10](rb-10-high-assistant-p95-latency.md).</pre></details>
+  <p class="c">Комментарий судьи: Показан только шаг 1 (Nginx keepalive), пропущен шаг 2 — перезапуск vLLM с --max-num-seqs=4.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q33" data-verdict="correct">
+  <h2>q33 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">По каким метрикам понять, что Promtail отстаёт от чтения файлов логов?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-13: promtail_read_bytes_total стоит на месте, а promtail_file_bytes_total продолжает расти — растущий разрыв значит, что Promtail не успевает читать.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>По метрикам `promtail_read_bytes_total` и `promtail_file_bytes_total` можно понять, что Promtail отстает от чтения файлов логов. Если `promtail_read_bytes_total` показывает стабильную линию, а `promtail_file_bytes_total` продолжает расти, это указывает на то, чтоPromtail застрял на определённом месте и не продвигается дальше. Это может свидетельствовать о проблеме с позиционным файлом или других блокирующих факторах.
+
+Опираюсь на runbook с ID RB-13 — Loki Not Ingesting Logs / Promtail Lag.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q36" data-verdict="correct">
+  <h2>q36 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Диск на ноде забит, контейнеры в CrashLoop, no space left on device. Как быстро освободить место и не потерять данные?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-15: усечь самые тяжёлые docker-логи (truncate -s 0 по LogPath, не удалять), docker system prune -f без --volumes; тома postgres/loki не трогать — docker volume prune только после подтверждения L3 и резервной копии; затем перезапустить контейнеры и настроить ротацию логов.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для быстрого освобождения места на диске и сохранения данных можно выполнить следующие шаги:
+
+1. **Усечь логи тяжёлых контейнеров:**
+```bash
+truncate -s 0 $(docker inspect --format=&#x27;{{.LogPath}}&#x27; vllm_container)
+truncate -s 0 $(docker inspect --format=&#x27;{{.LogPath}}&#x27; loki)
+```
+
+2. **Удалить неиспользуемые объекты:**
+```bash
+docker system prune -f
+```
+
+3. **Настроить ротацию логов:**
+```yaml
+logging:
+  driver: &quot;json-file&quot;
+  options:
+    max-size: &quot;50m&quot;
+    max-file: &quot;5&quot;
+```
+
+4. **Перезапустить контейнеры:**
+```bash
+docker compose up -d --force-recreate
+docker ps -a  # убедиться, что все Up
+```
+
+5. **Проверить восстановление:**
+```bash
+curl -s http://localhost:8001/health | jq .
+df -h /
+```
+
+Опираюсь на runbook&#x27;и с ID RB-15 и RB-09.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q39" data-verdict="correct">
+  <h2>q39 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">A user paid via SBP, the money left their bank account, but the transaction has been stuck in PENDING for 20 minutes. What should the on-call engineer do?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-02: проверить laravel-worker и логи колбэка; взять sbp_operation_id из meta транзакции; запросить сверку у банка-партнёра; если списание подтверждено и card_credited_at IS NULL — довести вручную: php artisan sbp:finalize-transaction --txn=&lt;txn_id&gt; --force.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>На основе предоставленных runbook&#x27;ов, на-call инженер должен следовать следующим шагам:
+
+1. **Получить `sbp_operation_id`** из поля `meta` транзакции.
+2. **Запросить сверку у банка-партнёра** через внутренний API или вручную через ЛК банка; подтвердить статус операции по `sbp_operation_id`.
+3. Если банк подтверждает успешное списание — **вручную запустить доведение**:
+   ```bash
+   docker exec laravel-app php artisan sbp:finalize-transaction --txn=tx_8f3ac1 --force
+   ```
+4. Убедиться, что автоконвертация и зачисление прошли:
+   ```sql
+   SELECT status, card_credited_at, converted_amount_usd FROM transactions WHERE id = &#x27;tx_8f3ac1&#x27;;
+   ```
+5. Если банк сообщает, что списание было, но доведение невозможно — перевести транзакцию в `FAILED` и инициировать возврат:
+   ```bash
+   docker exec laravel-app php artisan sbp:refund --txn=tx_8f3ac1
+   ```
+6. Если списания не было — перевести транзакцию в `FAILED` без возврата.
+7. После стабилизации — зафиксировать инцидент в Яндекс Трекере и проверить очередь на наличие других зависших `PENDING`.
+
+Опираюсь на следующие runbook&#x27;и: RB-02, RB-03, RB-06.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<p><button id="copy">Скопировать итог</button></p><textarea id="out" readonly></textarea>
+</main><script>
+const res = {};
+function upd(){
+  const ids=[...document.querySelectorAll('.card')].map(c=>c.dataset.id);
+  const done=ids.filter(i=>res[i]); const agree=done.filter(i=>res[i]==='agree').length;
+  document.getElementById('out').value='Ручная проверка: согласен '+agree+'/'+done.length+' ('+ids.length+' в листе). '+
+    done.map(i=>i+'='+(res[i]==='agree'?'да':'нет')).join(', ');
+}
+document.querySelectorAll('.card').forEach(c=>c.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  res[c.dataset.id]=b.dataset.a; c.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); upd();}));
+document.getElementById('copy').onclick=()=>{const t=document.getElementById('out');t.select();navigator.clipboard&&navigator.clipboard.writeText(t.value);};
+upd();
+</script></body></html>

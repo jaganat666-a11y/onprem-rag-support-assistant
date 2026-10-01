@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ассистент дежурного</title>
+<!-- Демо-страница фасада (GET /): чат поверх тех же POST /ask и POST /feedback.
+     Без внешних шрифтов и CDN — стенд on-prem, страница работает без интернета. -->
+<style>
+  :root {
+    --page: #e9edf1;
+    --surface: #ffffff;
+    --ink: #17212b;
+    --muted: #5b6774;
+    --line: #d3dae1;
+    --accent: #0b6e78;
+    --accent-soft: #e1f0f1;
+    --code-bg: #1d2733;
+    --code-ink: #e4eaf0;
+    --warn-bg: #fff1c7;
+    --warn-line: #e8b931;
+    --warn-ink: #5c4300;
+    --ok: #1f8a4c;
+    --bad: #c0392b;
+    --q-bg: #24313f;
+    --q-ink: #f3f6f9;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --page: #12181f;
+      --surface: #1a222b;
+      --ink: #e4eaf0;
+      --muted: #97a3b0;
+      --line: #2c3742;
+      --accent: #4fb8c2;
+      --accent-soft: #163338;
+      --code-bg: #0e1419;
+      --warn-bg: #3a2f0e;
+      --warn-line: #a8841f;
+      --warn-ink: #f6dd93;
+      --q-bg: #2c3a49;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--page);
+    color: var(--ink);
+    font: 15px/1.55 "Segoe UI Variable Text", "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 16px; }
+
+  header { padding: 28px 0 18px; display: flex; gap: 16px; align-items: flex-end;
+           justify-content: space-between; flex-wrap: wrap; }
+  h1 { margin: 0; font-size: 22px; line-height: 1.2; font-weight: 650; letter-spacing: -0.01em; }
+  .lead { margin: 4px 0 0; color: var(--muted); }
+  .status { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font-size: 13px; }
+  .pill { display: inline-flex; align-items: center; gap: 7px; font-weight: 600; }
+  .pill::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+  .pill.up::before { background: var(--ok); }
+  .pill.down::before { background: var(--bad); }
+  .status .sub { color: var(--muted); }
+
+  #log { display: flex; flex-direction: column; gap: 14px; padding-bottom: 20px; }
+  .q { align-self: flex-end; max-width: 78%; background: var(--q-bg); color: var(--q-ink);
+       padding: 10px 14px; border-radius: 14px 14px 4px 14px; white-space: pre-wrap; }
+  .a { background: var(--surface); border: 1px solid var(--line); border-radius: 10px;
+       padding: 16px 18px 12px; }
+  .a.warn { background: var(--warn-bg); border-color: var(--warn-line); color: var(--warn-ink); }
+  .a p { margin: 0 0 8px; }
+  .a .first { font-weight: 650; }
+  .a .h { font-weight: 650; margin: 14px 0 6px; }
+  .a .h:first-child { margin-top: 0; }
+  .step { display: grid; grid-template-columns: 26px 1fr; gap: 0 4px; }
+  .step .n { font-weight: 650; color: var(--accent); }
+  .a pre { margin: 2px 0 12px 30px; background: var(--code-bg); color: var(--code-ink);
+           padding: 10px 12px; border-radius: 6px; overflow-x: auto;
+           font: 13px/1.5 "Cascadia Mono", Consolas, ui-monospace, monospace; }
+  .a code { font-family: "Cascadia Mono", Consolas, ui-monospace, monospace; font-size: 0.9em; }
+  .a :not(pre) > code { background: var(--accent-soft); padding: 1px 4px; border-radius: 4px; }
+  .a.warn :not(pre) > code { background: transparent; }
+  .a ul { margin: 0 0 8px; padding-left: 0; list-style: none; }
+  .a li { margin: 4px 0; }
+
+  .rb { display: inline-block; font-weight: 700; font-size: 13px; color: #fff; background: var(--accent);
+        padding: 1px 7px; border-radius: 4px; margin-right: 6px; }
+  .warn .rb { background: var(--warn-ink); color: var(--warn-bg); }
+  .source { margin: 10px 0 0; padding: 10px 0 0; border-top: 1px solid var(--line); }
+  .source .label { color: var(--muted); margin-right: 8px; }
+
+  .foot { display: flex; flex-wrap: wrap; gap: 4px 18px; align-items: center; margin-top: 10px;
+          font-size: 13px; color: var(--muted); }
+  .warn .foot { color: inherit; opacity: 0.85; }
+  .rate { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  .rate button { font: inherit; font-size: 15px; line-height: 1; padding: 5px 9px; cursor: pointer;
+                 background: var(--surface); border: 1px solid var(--line); border-radius: 6px; }
+  .rate button[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); }
+  .rate button:disabled { cursor: default; opacity: 0.55; }
+
+  .pending { color: var(--muted); display: flex; align-items: center; gap: 10px; }
+  .pending::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+                     animation: pulse 1.2s ease-in-out infinite; }
+  @keyframes pulse { 50% { opacity: 0.25; } }
+  .err { border-color: var(--bad); }
+  .err p { color: var(--bad); }
+
+  form { position: sticky; bottom: 0; background: var(--page); padding: 10px 0 20px; }
+  .box { display: flex; gap: 8px; background: var(--surface); border: 1px solid var(--line);
+         border-radius: 10px; padding: 8px; }
+  textarea { flex: 1; border: 0; resize: none; background: transparent; color: inherit;
+             font: inherit; padding: 6px 8px; min-height: 44px; outline: none; }
+  .box:focus-within { border-color: var(--accent); }
+  .send { font: inherit; font-weight: 600; color: #fff; background: var(--accent); border: 0;
+          border-radius: 7px; padding: 0 18px; cursor: pointer; }
+  .send:disabled { opacity: 0.5; cursor: default; }
+  .examples { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; font-size: 13px;
+              color: var(--muted); align-items: center; }
+  .examples button { font: inherit; color: var(--ink); background: transparent; cursor: pointer;
+                     border: 1px dashed var(--line); border-radius: 6px; padding: 3px 8px; text-align: left; }
+  button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  @media (max-width: 600px) {
+    .q { max-width: 92%; }
+    .a pre { margin-left: 0; }
+    .status { align-items: flex-start; }
+    .rate { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .pending::before { animation: none; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Ассистент дежурного</h1>
+      <p class="lead">Отвечает по runbook'ам поддержки. Модель работает на своём сервере.</p>
+    </div>
+    <div class="status" aria-live="polite">
+      <span class="pill" id="pill">Проверяю модель…</span>
+      <span class="sub" id="index"></span>
+    </div>
+  </header>
+
+  <main id="log" aria-live="polite"></main>
+
+  <form id="ask">
+    <div class="box">
+      <textarea id="question" rows="2" required
+                placeholder="Опишите проблему: что пишет клиент или что видно в логах"></textarea>
+      <button class="send" type="submit">Спросить</button>
+    </div>
+    <div class="examples" id="examples">Например:</div>
+  </form>
+</div>
+
+<script>
+const EXAMPLES = [
+  "Клиент говорит, что за одну покупку деньги списались дважды. Как найти дубли в базе?",
+  "Какой суточный лимит на пополнение карты через СБП для одного клиента?",
+  "Фасад /ask отвечает 502: Upstream vLLM unreachable. Какой порядок действий?",
+];
+const $ = (id) => document.getElementById(id);
+const fmt = (x, d = 1) => Number(x).toLocaleString("ru-RU", { maximumFractionDigits: d });
+let minScore = null;
+
+// --- разметка ответа: модель пишет markdown (шаги, блоки кода, списки) ------
+function esc(s) {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+function inline(s) {  // s уже экранирована
+  return s.replace(/`([^`]+)`/g, "<code>$1</code>").replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+}
+function rb(s) {      // «RB-05 — Заголовок» -> ярлык runbook'а + заголовок
+  return s.replace(/^(RB-\d+) — /, '<span class="rb">$1</span>');
+}
+function render(md) {
+  const out = [], lines = md.split("\n");
+  let inList = false;
+  const closeList = () => { if (inList) { out.push("</ul>"); inList = false; } };
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (/^\s*```/.test(line)) {
+      closeList();
+      const buf = [];
+      while (++i < lines.length && !/^\s*```/.test(lines[i])) buf.push(lines[i]);
+      out.push(`<pre><code>${esc(buf.join("\n"))}</code></pre>`);
+      continue;
+    }
+    const num = line.match(/^\s*(\d+)\.\s+(.*)/);
+    const li = line.match(/^\s*[-*]\s+(.*)/);
+    const h = line.match(/^\s*#{1,6}\s+(.*)/);
+    if (h) {
+      closeList();
+      out.push(`<p class="h">${inline(esc(h[1]))}</p>`);
+    } else if (num) {
+      closeList();
+      out.push(`<p class="step"><span class="n">${num[1]}.</span><span>${inline(esc(num[2]))}</span></p>`);
+    } else if (li) {
+      if (!inList) { out.push("<ul>"); inList = true; }
+      out.push(`<li>${rb(inline(esc(li[1])))}</li>`);
+    } else {
+      closeList();
+      if (line.trim()) out.push(`<p>${inline(esc(line))}</p>`);
+    }
+  }
+  closeList();
+  return out.join("");
+}
+
+// --- состояние модели и индекса ---------------------------------------------
+async function health() {
+  const pill = $("pill");
+  try {
+    const r = await fetch("/health");
+    const h = await r.json();
+    minScore = h.retrieval?.min_score ?? null;
+    pill.className = "pill " + (h.vllm_reachable ? "up" : "down");
+    pill.textContent = h.vllm_reachable ? "Модель на связи" : "Модель недоступна";
+    $("index").textContent = h.index_loaded
+      ? `В индексе ${h.chunks} фрагментов runbook'ов` : "Индекс загружается";
+  } catch {
+    pill.className = "pill down";
+    pill.textContent = "Фасад не отвечает";
+  }
+}
+
+// --- вопрос -> ответ ----------------------------------------------------------
+function add(cls, html) {
+  const el = document.createElement("div");
+  el.className = cls;
+  el.innerHTML = html;
+  $("log").append(el);
+  return el;
+}
+
+function answerHtml(body) {
+  const m = body.answer.match(/\n\nИсточник: (.+)$/);
+  const text = m ? body.answer.slice(0, m.index) : body.answer;
+  let html = render(text);
+  if (body.escalate) {
+    html = html.replace("<p>", '<p class="first">');
+    const top = body.scores[0] ?? 0;
+    const why = minScore != null
+      ? `Модель не вызывалась: уверенность поиска ${fmt(top, 3)} ниже порога ${fmt(minScore, 2)}`
+      : "Модель не вызывалась: поиск не уверен";
+    return html + `<div class="foot"><span>${why}</span></div>`;
+  }
+  if (m) html += `<p class="source"><span class="label">Источник</span>${rb(esc(m[1]))}</p>`;
+  return html + `<div class="foot">
+      <span>Уверенность поиска ${fmt(body.scores[0] ?? 0, 3)}</span>
+      <span>Поиск ${fmt(body.retrieval_s)} с</span>
+      <span>Генерация ${fmt(body.latency_s)} с</span>
+      <span class="rate">Ответ помог?
+        <button type="button" data-r="1" aria-pressed="false" aria-label="Помог">👍</button>
+        <button type="button" data-r="-1" aria-pressed="false" aria-label="Не помог">👎</button>
+      </span></div>`;
+}
+
+const ERRORS = {
+  422: "Вопрос пустой — опишите проблему.",
+  502: "Модель не отвечает (502). Проверьте контейнер vLLM — порядок действий в RB-11.",
+  503: "Индекс ещё загружается. Повторите через минуту.",
+};
+
+async function ask(question) {
+  add("q", esc(question));
+  const card = add("a", '<p class="pending">Ищу в runbook\'ах и готовлю ответ… <span>0 с</span></p>');
+  const t0 = Date.now();
+  const timer = setInterval(() => {
+    card.querySelector(".pending span").textContent = `${Math.round((Date.now() - t0) / 1000)} с`;
+  }, 1000);
+  try {
+    const r = await fetch("/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
+    });
+    const body = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(ERRORS[r.status] || `Фасад вернул ${r.status}: ${body.detail || ""}`);
+    card.className = body.escalate ? "a warn" : "a";
+    card.innerHTML = answerHtml(body);
+    card.querySelectorAll(".rate button").forEach((b) =>
+      b.addEventListener("click", () => rate(card, body.ask_id, Number(b.dataset.r), b)));
+  } catch (e) {
+    card.className = "a err";
+    card.innerHTML = `<p>${esc(e.message === "Failed to fetch"
+      ? "Фасад не отвечает. Проверьте контейнер facade." : e.message)}</p>`;
+    health();
+  } finally {
+    clearInterval(timer);
+  }
+}
+
+// --- оценка 👍/👎 -> POST /feedback, строка ask_log -------------------------
+async function rate(card, askId, rating, btn) {
+  const box = card.querySelector(".rate");
+  const note = (t) => { box.firstChild.textContent = t + " "; };
+  if (askId == null) { note("Журнал выключен — оценка не сохранится"); return; }
+  try {
+    const r = await fetch("/feedback", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ask_id: askId, rating }),
+    });
+    if (!r.ok) throw new Error();
+    box.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b === btn)));
+    note("Оценка записана в журнал");
+  } catch {
+    note("Журнал недоступен — оценка не записана");
+  }
+}
+
+// --- форма --------------------------------------------------------------------
+const form = $("ask"), input = $("question"), send = form.querySelector(".send");
+async function submit(q) {
+  q = q.trim();
+  if (!q || send.disabled) return;
+  input.value = "";
+  send.disabled = true;
+  await ask(q);
+  send.disabled = false;
+  input.focus();
+}
+form.addEventListener("submit", (e) => { e.preventDefault(); submit(input.value); });
+input.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(input.value); }
+});
+for (const q of EXAMPLES) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.textContent = q.length > 60 ? q.slice(0, 58) + "…" : q;
+  b.title = q;
+  b.addEventListener("click", () => submit(q));
+  $("examples").append(b);
+}
+health();
+</script>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{
+  "meta": {
+    "started": "2026-09-30T23:57:36",
+    "facade": "http://localhost:8080",
+    "model": {
+      "served_name": "qwen2.5-7b",
+      "weights": "Qwen/Qwen2.5-7B-Instruct-AWQ",
+      "max_model_len": 8192
+    },
+    "retrieval": {
+      "rerank": true,
+      "cand_k": 12,
+      "top_k": 8,
+      "min_score": 0.3
+    },
+    "questions_file": "questions_holdout.jsonl"
+  },
+  "metrics": {
+    "questions": 20,
+    "http_errors": 0,
+    "in_corpus": {
+      "n": 10,
+      "hit@1": 0.9,
+      "hit@8": 1.0,
+      "cites_expected": 1.0,
+      "facts_coverage": 0.35,
+      "refusal_heur": 0.8,
+      "escalated": 0.8,
+      "top_rerank_score": {
+        "min": 0.021,
+        "p50": 0.082,
+        "max": 0.559
+      }
+    },
+    "out_of_corpus": {
+      "n": 10,
+      "refusal_heur": 1.0,
+      "escalated": 1.0,
+      "top_rerank_score": {
+        "min": 0.001,
+        "p50": 0.007,
+        "max": 0.133
+      }
+    },
+    "latency_s": {
+      "total": {
+        "p50": 15.6,
+        "p95": 16.5
+      },
+      "retrieval": {
+        "p50": 15.5,
+        "p95": 16.1
+      },
+      "generation": {
+        "p50": 0.0,
+        "p95": 7.5
+      }
+    }
+  }
+}

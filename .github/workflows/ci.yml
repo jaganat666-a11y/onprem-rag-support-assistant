@@ -1,0 +1,23 @@
+name: ci
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"   # как в facade/Dockerfile
+      - run: pip install -r requirements-dev.txt
+      - name: lint
+        run: ruff check .
+      - name: tests (без GPU и моделей)
+        run: pytest -q
+      - name: compose-файл валиден (с GPU-профилем и без)
+        run: |
+          docker compose config -q
+          docker compose --profile gpu config -q

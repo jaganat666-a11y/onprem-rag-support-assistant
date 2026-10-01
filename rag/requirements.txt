@@ -1,0 +1,6 @@
+# RAG-слой. Эмбеддер bge-m3 и реранкер bge-reranker-v2-m3 крутятся на CPU
+# (GPU занят vLLM). torch ставится транзитивно через sentence-transformers;
+# CPU-сборки достаточно. Веса моделей качаются с HuggingFace один раз и кешируются.
+# Версии — те же, что в образе фасада (facade/requirements.txt).
+sentence-transformers==6.1.0
+numpy==2.4.6

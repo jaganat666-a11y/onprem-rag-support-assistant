@@ -1,0 +1,23 @@
+# Держим build-контекст фасада лёгким: в образ идут только rag/, corpus/, facade/.
+.git/
+.github/
+docs/
+monitoring/
+docker-compose.yml
+README.md
+*.md
+!corpus/**/*.md
+
+# python / кеши
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+rag/_index_cache/
+
+# веса моделей / HF-кеш — никогда не в образ
+hf-cache/
+vllm-hf-cache/
+*.gguf
+*.safetensors

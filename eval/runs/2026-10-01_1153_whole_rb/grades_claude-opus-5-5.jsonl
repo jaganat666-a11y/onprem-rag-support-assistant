@@ -1,0 +1,50 @@
+{"id": "q01", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Дана только проверка логов Nginx; пропущены проверка webhook_events (нет строки — вебхук не дошёл), логи webhook-handler в Loki и панель Payments / Webhook Health."}
+{"id": "q02", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q03", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Не ответил, кому разрешено (только L2/L3), и не упомянул запрос повторной отправки события у эквайера."}
+{"id": "q04", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Ручное доведение подано без условий из RB-02: подтверждение списания банком и проверка card_credited_at IS NULL перед finalize."}
+{"id": "q05", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q06", "verdict": "incorrect", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Вывод «да, нужен возврат» и команда sbp:refund противоречат RB-02: без списания транзакцию переводят в FAILED без возврата, иначе возникнет недостача."}
+{"id": "q07", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q08", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q09", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q10", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q11", "verdict": "partial", "hallucination": true, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Возврат с Idempotency-Key описан верно, но добавлена выдуманная DDL unique_idempotency_key, ключ возврата смешан с проверкой в webhook-processor, не упомянута фиксация списка дублей."}
+{"id": "q12", "verdict": "partial", "hallucination": true, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Суть верна, но команда ALTER TABLE ... unique_idempotency_key выдумана — в RB-04 есть только требование UNIQUE-индекса."}
+{"id": "q13", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "В «Дополнительных действиях» порог 15 минут ошибочно отнесён к уведомлению L2, хотя по RB-05 L2 уведомляют сразу, а 15 минут — порог передачи на L3."}
+{"id": "q14", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q15", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q16", "verdict": "partial", "hallucination": true, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Идея smoke-теста с новым HMAC верна, но команда webhooks:test --hmac выдумана — в RB-06 её нет."}
+{"id": "q17", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Пропущено главное для безопасности: replay должен быть идемпотентным (дедуп по txn_id, только pending, терминальные пропускать)."}
+{"id": "q18", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q19", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q20", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q21", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q22", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q23", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q24", "verdict": "partial", "hallucination": true, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Основной ответ верен, но LogQL-запрос по job=\"gpu_exporter\" выдуман — в RB-09 его нет."}
+{"id": "q25", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q26", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Пропущена p95 e2e latency (vllm:e2e_request_latency_seconds_bucket), а preemption неверно переведено как «предиктивные выключения»."}
+{"id": "q27", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q28", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q29", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q30", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q31", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q32", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Не описан фикс при нехватке диска у Loki (retention или расширение тома, Fix B)."}
+{"id": "q33", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q34", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q35", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q36", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Не сказано, что тома postgres/loki трогать нельзя и docker volume prune допустим только после подтверждения L3 и бэкапа; нет настройки ротации логов."}
+{"id": "q37", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q38", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": true, "stray_cite": false, "comment": "Содержание верное, но ответ состоит из английских фраз RB-16 без перевода."}
+{"id": "q39", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Ручное доведение подано без условий: подтверждение списания банком и проверка card_credited_at IS NULL перед finalize."}
+{"id": "q40", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o01", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o02", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o03", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o04", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o05", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o06", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o07", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o08", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o09", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o10", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}

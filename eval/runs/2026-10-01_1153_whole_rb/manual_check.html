@@ -1,0 +1,375 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Ручная проверка судьи</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--mute:#5d6470;--line:#dde1e7;--ok:#1f7a4d;--mid:#a86b00;--bad:#b3261e;--sel:#e8f0fe}
+@media (prefers-color-scheme:dark){:root{--bg:#15171b;--card:#1e2126;--ink:#e6e8eb;--mute:#9aa1ac;--line:#30343b;--sel:#233044}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+main{max-width:880px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px} .q{font-weight:600}
+pre{white-space:pre-wrap;font:13px/1.45 ui-monospace,Consolas,monospace;background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto}
+.v.correct{color:var(--ok)} .v.partial{color:var(--mid)} .v.incorrect{color:var(--bad)} .c{color:var(--mute)}
+.btns button{margin-right:8px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.btns button.on{background:var(--sel);border-color:#6b8fd6}
+#out{width:100%;min-height:70px;font:13px ui-monospace,monospace}
+</style></head><body><main>
+<h1>Ручная проверка судьи — 10 ответов</h1>
+<p>Прочитай эталон и ответ, нажми «согласен» или «не согласен» с вердиктом судьи. Внизу — строка итога: скопируй её в чат.</p>
+
+<section class="card" data-id="o08" data-verdict="correct">
+  <h2>o08 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как обновить Kubernetes-кластер до следующей минорной версии?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Уверенного ответа в runbook&#x27;ах нет.
+Ближе всего по поиску — проверьте, подходит ли:
+- RB-12 — Prometheus scrape DOWN — host.docker.internal не резолвится после рестарта WSL
+- RB-09 — vLLM OOM — контейнер упал из-за нехватки VRAM
+- RB-16 — GitHub Actions pipeline fails: docker build or lint step red on push
+Вопрос передан дежурному инженеру.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o09" data-verdict="correct">
+  <h2>o09 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как включить сотрудникам двухфакторную аутентификацию для входа в админку?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Уверенного ответа в runbook&#x27;ах нет.
+Ближе всего по поиску — проверьте, подходит ли:
+- RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера
+- RB-04 — Двойное списание по карте (double charge)
+- RB-03 — Автоконвертация RUB→USD: провайдер курса недоступен, платёж завис
+Вопрос передан дежурному инженеру.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q01" data-verdict="partial">
+  <h2>q01 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Клиент пишет: пополнил по СБП, банк деньги списал, а баланс карты не изменился. Как проверить, дошёл ли до нас платёжный вебхук?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-01: проверить в логах Nginx, был ли POST /api/webhooks/payment; найти события по txn_id в логах webhook-handler (Loki) и в таблице webhook_events: нет строки — вебхук не дошёл, две строки с одним event_id — дубль; посмотреть панель Payments / Webhook Health.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>1. Проверить, дошёл ли вебхук до Nginx:
+```bash
+docker logs nginx --since 10m 2&gt;&amp;1 | grep &quot;POST /api/webhooks/payment&quot;
+```
+Ожидаемая строка:
+```
+10.0.0.5 - - [23/Jun/2026:14:31:02 +0000] &quot;POST /api/webhooks/payment HTTP/1.1&quot; 200 42
+```
+
+Источник: RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера</pre></details>
+  <p class="c">Комментарий судьи: Указан только шаг с Nginx, нет проверки логов webhook-handler и таблицы webhook_events.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q04" data-verdict="partial">
+  <h2>q04 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Платёж по СБП висит в PENDING уже 20 минут, у клиента деньги списаны. Что делать дежурному?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-02: проверить воркер laravel-worker и логи колбэка; взять sbp_operation_id из meta транзакции; запросить сверку у банка-партнёра; если банк подтвердил списание и card_credited_at IS NULL — довести вручную: php artisan sbp:finalize-transaction --txn=&lt;txn_id&gt; --force; затем проверить статус и зачисление.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Дежурному инженеру следует выполнить следующие шаги:
+
+1. **Проверить статус воркера очереди:**
+```bash
+docker ps --filter name=laravel-worker
+docker logs --tail=100 laravel-worker 2&gt;&amp;1 | grep -E &quot;sbp|callback|tx_8f3ac1&quot;
+```
+
+2. **LogQL в Grafana / Loki:**
+```logql
+{job=&quot;laravel-worker&quot;} |= &quot;sbp&quot; |= &quot;PENDING&quot; | json | line_format &quot;{{.message}}&quot;
+{job=&quot;sbp-callback&quot;} |= &quot;callback&quot; |= &quot;error&quot;
+```
+
+3. **Метрика в Grafana:**
+Панель `SBP / Callback Success Rate` → дашборд `Payments Overview`.
+Метрика: `rate(sbp_callback_received_total[5m])` — если близка к нулю при ненулевом `sbp_payment_initiated_total`, колбэки не доходят.
+
+4. **SQL-запрос состояния транзакции:**
+```sql
+SELECT id, user_id, status, amount_rub, created_at, updated_at, meta-&gt;&gt;&#x27;sbp_operation_id&#x27; AS sbp_op
+FROM transactions
+WHERE id = &#x27;tx_8f3ac1&#x27;;
+```
+
+5. **Проверить доступность эндпоинта колбэка СБП:**
+```bash
+curl -v -o /dev/null -s -w &quot;%{http_code}&quot; https://api.internal/sbp/callback/health
+ss -tlnp | grep :443
+```
+
+6. **Получить `sbp_operation_id`** из поля `meta` транзакции (см. SQL выше).
+
+7. **Запросить сверку у банка-партнёра** через внутренний API или вручную через ЛК банка; подтвердить статус операции по `sbp_operation_id`.
+
+8. **Вручную запустить доведение** (временный workaround):
+```bash
+docker exec laravel-app php artisan sbp:finalize-transaction --txn=tx_8f3ac1 --force
+```
+
+9. **Убедиться, что автоконвертация и зачисление прошли** (значения должны заполниться, статус — стать терминальным):
+```sql
+SELECT status, card_credited_at, converted_amount_usd FROM transactions WHERE id = &#x27;tx_8f3ac1&#x27;;
+```
+
+10. **После стабилизации — зафиксировать инцидент в Яндекс Трекере и проверить очередь на наличие других зависших `PENDING`.**
+
+Если платёж висит в PENDING более 20 минут, дежурный инженер должен следовать этим шагам для решения проблемы.
+
+Источник: RB-02 — СБП-пополнение зависло в PENDING: таймаут колбэка, ручная сверка и доведение</pre></details>
+  <p class="c">Комментарий судьи: finalize с --force дан без предварительной проверки card_credited_at IS NULL, есть риск двойного зачисления.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q19" data-verdict="correct">
+  <h2>q19 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как вытащить из базы транзакции, у которых сумма не совпадает с банковским реестром?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-07: JOIN transactions с bank_recon_import по b.bank_txn_ref = t.external_ref за вчерашнюю дату с условием ABS(t.amount_rub - b.bank_amount_rub) &gt; 0.01, сортировка по величине дельты.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Чтобы вытащить из базы транзакции, у которых сумма не совпадает с банковским реестром, можно использовать следующую SQL-запрос:
+
+```sql
+SELECT
+    t.id                         AS txn_id,
+    t.user_id,
+    t.amount_rub,
+    t.amount_usd,
+    t.fx_rate,
+    t.created_at,
+    b.bank_amount_rub,
+    (t.amount_rub - b.bank_amount_rub) AS delta_rub
+FROM transactions t
+JOIN bank_recon_import b ON b.bank_txn_ref = t.external_ref
+WHERE DATE(t.created_at) = CURRENT_DATE - 1
+  AND ABS(t.amount_rub - b.bank_amount_rub) &gt; 0.01
+ORDER BY ABS(delta_rub) DESC
+LIMIT 50;
+```
+
+Этот запрос выбирает транзакции, где сумма в базе данных (`t.amount_rub`) не совпадает с суммой в банковском реестре (`b.bank_amount_rub`), и сортирует их по абсолютной величине разницы (`delta_rub`).
+
+Источник: RB-07 — Расхождение сверки — сумма в БД не совпадает с банковским реестром</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q24" data-verdict="partial">
+  <h2>q24 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Как по Grafana подтвердить, что vLLM упал именно из-за нехватки видеопамяти?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-09: дашборд vLLM Observability, панель VRAM Used (MiB) — метрика nvidia_smi_memory_used_bytes из gpu-exporter :9835; перед падением значение упирается в ~8000 MiB.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для подтверждения, что vLLM упал именно из-за нехватки видеопамяти, можно использовать следующие шаги:
+
+1. Открыть дашборд **&quot;vLLM Observability&quot;**, панель `VRAM Used (MiB)` (источник: `nvidia_smi_memory_used_bytes` из gpu-exporter `:9835`). Убедиться, что перед падением значение упиралось в ~8000 MiB.
+
+   ```promql
+   nvidia_smi_memory_used_bytes{gpu=&quot;0&quot;} / 1024 / 1024
+   ```
+
+2. Проверить логи GPU в Grafana с помощью LogQL:
+
+   ```logql
+   {job=&quot;gpu_exporter&quot;} |= &quot;error&quot; | json | line_format &quot;{{.ts}} {{.level}} {{.msg}}&quot;
+   ```
+
+3. Искать строки логов, которые указывают на нехватку видеопамяти:
+
+   ```
+   torch.cuda.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.80 GiB (GPU 0; 8.00 GiB total capacity; 7.43 GiB already allocated)
+   ```
+
+Эти шаги помогут подтвердить, что vLLM упал именно из-за нехватки видеопамяти.
+
+Источник: RB-09 — vLLM OOM — контейнер упал из-за нехватки VRAM</pre></details>
+  <p class="c">Комментарий судьи: Основной ответ верный, но LogQL с job=&quot;gpu_exporter&quot; выдуман и в корпусе его нет.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q33" data-verdict="correct">
+  <h2>q33 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">По каким метрикам понять, что Promtail отстаёт от чтения файлов логов?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-13: promtail_read_bytes_total стоит на месте, а promtail_file_bytes_total продолжает расти — растущий разрыв значит, что Promtail не успевает читать.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>По метрикам `promtail_read_bytes_total` и `promtail_file_bytes_total` можно понять, что Promtail отстает от чтения файлов логов. Если `promtail_read_bytes_total` показывает статичное значение, а `promtail_file_bytes_total` продолжает расти, это указывает на то, что Promtail застрял на определённом месте в файле логов. Это означает, что Promtail не читает новые данные из файлов логов.
+
+Источник: RB-13 — Loki Not Ingesting Logs / Promtail Lag</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q34" data-verdict="correct">
+  <h2>q34 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">В логах Laravel: remaining connection slots are reserved, клиенты не могут пополнить карту. Что делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-14: посмотреть соединения в pg_stat_activity, найти блокирующий запрос через pg_locks; временно завершить блокирующий бэкенд SELECT pg_terminate_backend(&lt;pid&gt;); перезапустить PgBouncer и проверить, что его пул не превышает max_connections; постоянно — EXPLAIN ANALYZE и оптимизация запроса.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В данном случае следует следовать следующим шагам:
+
+1. Проверить число активных соединений:
+```bash
+docker exec -it postgres psql -U app_user -d payworld -c \
+  &quot;SELECT count(*), state FROM pg_stat_activity GROUP BY state;&quot;
+```
+
+2. Найти long-running и блокирующие запросы:
+```sql
+SELECT pid, now() - pg_stat_activity.query_start AS duration,
+       usename, application_name, state, wait_event_type, wait_event,
+       left(query, 120) AS query_snippet
+FROM pg_stat_activity
+WHERE state != &#x27;idle&#x27;
+  AND query_start &lt; now() - interval &#x27;30 seconds&#x27;
+ORDER BY duration DESC;
+```
+
+3. Найти цепочку блокировок:
+```sql
+SELECT blocked.pid AS blocked_pid, blocked_act.query AS blocked_query,
+       blocking.pid AS blocking_pid, blocking_act.query AS blocking_query
+FROM pg_locks blocked
+JOIN pg_stat_activity blocked_act   ON blocked_act.pid = blocked.pid
+JOIN pg_locks blocking ON blocking.locktype = blocked.locktype
+  AND blocking.database     IS NOT DISTINCT FROM blocked.database
+  AND blocking.relation     IS NOT DISTINCT FROM blocked.relation
+  AND blocking.page         IS NOT DISTINCT FROM blocked.page
+  AND blocking.tuple        IS NOT DISTINCT FROM blocked.tuple
+  AND blocking.virtualxid   IS NOT DISTINCT FROM blocked.virtualxid
+  AND blocking.transactionid IS NOT DISTINCT FROM blocked.transactionid
+  AND blocking.classid      IS NOT DISTINCT FROM blocked.classid
+  AND blocking.objid        IS NOT DISTINCT FROM blocked.objid
+  AND blocking.objsubid     IS NOT DISTINCT FROM blocked.objsubid
+  AND blocking.pid != blocked.pid
+JOIN pg_stat_activity blocking_act  ON blocking_act.pid = blocking.pid
+WHERE NOT blocked.granted AND blocking.granted;
+```
+
+4. Логи контейнера:
+```bash
+docker logs --tail=100 postgres 2&gt;&amp;1 | grep -E &quot;ERROR|FATAL|connection&quot;
+```
+
+5. Метрика в Grafana: панель `PostgreSQL / Connections` → график `pg_stat_activity_count` по `state`; алерт `pg_connections_near_limit` (порог 90% от `max_connections`).
+
+6. LogQL в Loki:
+```
+{job=&quot;laravel&quot;} |= &quot;remaining connection slots&quot;
+```
+
+7. Временный workaround (немедленно):
+```sql
+SELECT pg_terminate_backend(&lt;blocking_pid&gt;);
+```
+
+8. Фикс пула:
+```bash
+# Проверить, запущен ли PgBouncer
+docker ps | grep pgbouncer
+
+# Перезапустить PgBouncer для сброса зависших клиентов
+docker restart pgbouncer
+```
+
+9. Убедиться, что суммарный backend-пул PgBouncer не превышает `max_connections` PostgreSQL за вычетом зарезервированных суперъюзерских слотов. После нормализации числа соединений проверить алерт в Grafana — он должен закрыться в течение 2 минут.
+
+10. Постоянный фикс: разобраться с причиной long-running запроса (`EXPLAIN ANALYZE`), добавить индекс или оптимизировать ORM-запрос; при необходимости поднять `max_connections` в `postgresql.conf` и пересмотреть `pool_size` в PgBouncer.
+
+Источник: RB-14 — PostgreSQL — исчерпан пул соединений, блокировки от long-running запроса</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q39" data-verdict="partial">
+  <h2>q39 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">A user paid via SBP, the money left their bank account, but the transaction has been stuck in PENDING for 20 minutes. What should the on-call engineer do?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-02: проверить laravel-worker и логи колбэка; взять sbp_operation_id из meta транзакции; запросить сверку у банка-партнёра; если списание подтверждено и card_credited_at IS NULL — довести вручную: php artisan sbp:finalize-transaction --txn=&lt;txn_id&gt; --force.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>На основе предоставленных runbook&#x27;ов, на-call инженер должен выполнить следующие шаги:
+
+1. **Проверить статус воркера очереди:**
+```bash
+docker ps --filter name=laravel-worker
+docker logs --tail=100 laravel-worker 2&gt;&amp;1 | grep -E &quot;sbp|callback|tx_8f3ac1&quot;
+```
+
+2. **LogQL в Grafana / Loki:**
+```logql
+{job=&quot;laravel-worker&quot;} |= &quot;sbp&quot; |= &quot;PENDING&quot; | json | line_format &quot;{{.message}}&quot;
+{job=&quot;sbp-callback&quot;} |= &quot;callback&quot; |= &quot;error&quot;
+```
+
+3. **Метрика в Grafana:**
+Панель `SBP / Callback Success Rate` → дашборд `Payments Overview`.
+Метрика: `rate(sbp_callback_received_total[5m])` — если близка к нулю при ненулевом `sbp_payment_initiated_total`, колбэки не доходят.
+
+4. **SQL-запрос состояния транзакции:**
+```sql
+SELECT id, user_id, status, amount_rub, created_at, updated_at, meta-&gt;&gt;&#x27;sbp_operation_id&#x27; AS sbp_op
+FROM transactions
+WHERE id = &#x27;tx_8f3ac1&#x27;;
+```
+
+5. **Проверить доступность эндпоинта колбэка СБП:**
+```bash
+curl -v -o /dev/null -s -w &quot;%{http_code}&quot; https://api.internal/sbp/callback/health
+ss -tlnp | grep :443
+```
+
+6. **Получить `sbp_operation_id`** из поля `meta` транзакции (см. SQL выше).
+
+7. **Запросить сверку у банка-партнёра** через внутренний API или вручную через ЛК банка; подтвердить статус операции по `sbp_operation_id`.
+
+8. **Вручную запустить доведение** (временный workaround):
+```bash
+docker exec laravel-app php artisan sbp:finalize-transaction --txn=tx_8f3ac1 --force
+```
+
+9. **Убедиться, что автоконвертация и зачисление прошли:**
+```sql
+SELECT status, card_credited_at, converted_amount_usd FROM transactions WHERE id = &#x27;tx_8f3ac1&#x27;;
+```
+
+10. **После стабилизации — зафиксировать инцидент в Яндекс Трекере и проверить очередь на наличие других зависших `PENDING`.**
+
+Если транзакция не может быть доведена, необходимо перевести её в `FAILED` и инициировать возврат через `php artisan sbp:refund --txn=tx_8f3ac1` или перевести в `FAILED` без возврата, в зависимости от ответа банка.
+
+Источник: RB-02 — СБП-пополнение зависло в PENDING: таймаут колбэка, ручная сверка и доведение</pre></details>
+  <p class="c">Комментарий судьи: Нет проверки card_credited_at IS NULL перед finalize --force, риск двойного зачисления.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q40" data-verdict="correct">
+  <h2>q40 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">How do I find which PostgreSQL query is blocking the others and release the lock?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-14: запрос к pg_locks с джойном к pg_stat_activity (заблокированный NOT granted, блокирующий granted) даёт blocking_pid; временный workaround — SELECT pg_terminate_backend(&lt;blocking_pid&gt;).</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Чтобы найти блокирующий запрос и освободить его, нужно выполнить следующие шаги:
+
+1. Найти цепочку блокировок:
+```sql
+SELECT blocked.pid AS blocked_pid, blocked_act.query AS blocked_query,
+       blocking.pid AS blocking_pid, blocking_act.query AS blocking_query
+FROM pg_locks blocked
+JOIN pg_stat_activity blocked_act   ON blocked_act.pid = blocked.pid
+JOIN pg_locks blocking ON blocking.locktype = blocked.locktype
+  AND blocking.database     IS NOT DISTINCT FROM blocked.database
+  AND blocking.relation     IS NOT DISTINCT FROM blocked.relation
+  AND blocking.page         IS NOT DISTINCT FROM blocked.page
+  AND blocking.tuple        IS NOT DISTINCT FROM blocked.tuple
+  AND blocking.virtualxid   IS NOT DISTINCT FROM blocked.virtualxid
+  AND blocking.transactionid IS NOT DISTINCT FROM blocked.transactionid
+  AND blocking.classid      IS NOT DISTINCT FROM blocked.classid
+  AND blocking.objid        IS NOT DISTINCT FROM blocked.objid
+  AND blocking.objsubid     IS NOT DISTINCT FROM blocked.objsubid
+  AND blocking.pid != blocked.pid
+JOIN pg_stat_activity blocking_act  ON blocking_act.pid = blocking.pid
+WHERE NOT blocked.granted AND blocking.granted;
+```
+
+2. Завершить блокирующий процесс:
+```sql
+SELECT pg_terminate_backend(&lt;blocking_pid&gt;);
+```
+
+Замените `&lt;blocking_pid&gt;` на PID блокирующего процесса, который был найден на первом шаге.
+
+Источник: RB-14 — PostgreSQL — исчерпан пул соединений, блокировки от long-running запроса</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<p><button id="copy">Скопировать итог</button></p><textarea id="out" readonly></textarea>
+</main><script>
+const res = {};
+function upd(){
+  const ids=[...document.querySelectorAll('.card')].map(c=>c.dataset.id);
+  const done=ids.filter(i=>res[i]); const agree=done.filter(i=>res[i]==='agree').length;
+  document.getElementById('out').value='Ручная проверка: согласен '+agree+'/'+done.length+' ('+ids.length+' в листе). '+
+    done.map(i=>i+'='+(res[i]==='agree'?'да':'нет')).join(', ');
+}
+document.querySelectorAll('.card').forEach(c=>c.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  res[c.dataset.id]=b.dataset.a; c.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); upd();}));
+document.getElementById('copy').onclick=()=>{const t=document.getElementById('out');t.select();navigator.clipboard&&navigator.clipboard.writeText(t.value);};
+upd();
+</script></body></html>

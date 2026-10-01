@@ -1,0 +1,259 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Ручная проверка судьи</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--mute:#5d6470;--line:#dde1e7;--ok:#1f7a4d;--mid:#a86b00;--bad:#b3261e;--sel:#e8f0fe}
+@media (prefers-color-scheme:dark){:root{--bg:#15171b;--card:#1e2126;--ink:#e6e8eb;--mute:#9aa1ac;--line:#30343b;--sel:#233044}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+main{max-width:880px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px} .q{font-weight:600}
+pre{white-space:pre-wrap;font:13px/1.45 ui-monospace,Consolas,monospace;background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto}
+.v.correct{color:var(--ok)} .v.partial{color:var(--mid)} .v.incorrect{color:var(--bad)} .c{color:var(--mute)}
+.btns button{margin-right:8px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.btns button.on{background:var(--sel);border-color:#6b8fd6}
+#out{width:100%;min-height:70px;font:13px ui-monospace,monospace}
+</style></head><body><main>
+<h1>Ручная проверка судьи — 10 ответов</h1>
+<p>Прочитай эталон и ответ, нажми «согласен» или «не согласен» с вердиктом судьи. Внизу — строка итога: скопируй её в чат.</p>
+
+<section class="card" data-id="o05" data-verdict="correct">
+  <h2>o05 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Растёт consumer lag в Kafka на топике payments. Как разобраться?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет (Kafka в корпусе не упоминается): правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Уверенного ответа в runbook&#x27;ах нет.
+Ближе всего по поиску — проверьте, подходит ли:
+- RB-13 — Loki Not Ingesting Logs / Promtail Lag
+- RB-04 — Двойное списание по карте (double charge)
+- RB-10 — Высокая latency p95 ассистента: переполнение KV-cache и preemption
+Вопрос передан дежурному инженеру.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o09" data-verdict="correct">
+  <h2>o09 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как включить сотрудникам двухфакторную аутентификацию для входа в админку?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Уверенного ответа в runbook&#x27;ах нет.
+Ближе всего по поиску — проверьте, подходит ли:
+- RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера
+- RB-04 — Двойное списание по карте (double charge)
+- RB-03 — Автоконвертация RUB→USD: провайдер курса недоступен, платёж завис
+Вопрос передан дежурному инженеру.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q03" data-verdict="partial">
+  <h2>q03 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Подтвердили, что вебхук от эквайера потерялся. Как вручную довести зачисление и кому это разрешено делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-01: запросить у эквайера повторную отправку события; временный workaround — docker exec payment-service php artisan payment:replay --txn &lt;txn_id&gt;, только L2/L3 и только после проверки, что записи в webhook_events нет.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Если вебхук от эквайера потерялся, нужно выполнить следующие шаги для вручной доведки зачисления:
+
+1. **Проверить, дошёл ли вебхук до Nginx:**
+```bash
+docker logs nginx --since 10m 2&gt;&amp;1 | grep &quot;POST /api/webhooks/payment&quot;
+```
+
+2. **Проверить логи контейнера webhook-handler (Loki / LogQL):**
+```logql
+{job=&quot;webhook-handler&quot;} |= &quot;tx_8f3ac1&quot;
+```
+
+3. **Проверить идемпотентность в PostgreSQL:**
+```sql
+SELECT event_id, txn_id, status, created_at, processed_at
+FROM webhook_events
+WHERE txn_id = &#x27;tx_8f3ac1&#x27;
+ORDER BY created_at;
+```
+
+4. **Проверить доступность эндпоинта:**
+```bash
+curl -v -X POST https://pay.example.internal/api/webhooks/payment \
+  -H &quot;X-Signature: test&quot; -d &#x27;{&quot;event_id&quot;:&quot;probe-1&quot;,&quot;txn_id&quot;:&quot;probe&quot;}&#x27; 2&gt;&amp;1 | head -20
+```
+
+5. **Вручную запустить команду зачисления:**
+```bash
+docker exec payment-service php artisan payment:replay --txn tx_8f3ac1
+```
+
+Эти шаги должны быть выполнены дежурным инженером поддержки, который имеет соответствующие права доступа и разрешение на выполнение таких действий.
+
+Источник: RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера</pre></details>
+  <p class="c">Комментарий судьи: Не сказано, что replay разрешён только L2/L3, и не упомянут запрос повторной отправки у эквайера; условие «записи в webhook_events нет» размыто.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q22" data-verdict="correct">
+  <h2>q22 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Какая норма у balance_cache_hit_ratio и при каком значении это уже массовый сбой Redis?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-08: норма — выше 0.90; падение ниже 0.5 означает массовый Redis-промах, повод эскалировать в L3.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Норма у метрики `balance_cache_hit_ratio` — более 0.90. Массовый сбой Redis считается при значении этой метрики ниже 0.5.
+
+Источник: RB-08 — Telegram Mini App: устаревший баланс (кеш / протухший токен сессии)</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q28" data-verdict="correct">
+  <h2>q28 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Пока vLLM не подняли, куда направить операторов поддержки?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-11: на статичный HTML-зеркальный индекс runbook&#x27;ов (/runbooks/static) и сообщить L1 через служебный чат.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Пока vLLM не подняли, операторов поддержки нужно направить на статичный HTML-зеркальный индекс runbook-ов (`/runbooks/static`), сообщить L1 через служебный чат.
+
+Источник: RB-11 — FastAPI-фасад 502 — upstream vLLM недоступен</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q33" data-verdict="partial">
+  <h2>q33 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">По каким метрикам понять, что Promtail отстаёт от чтения файлов логов?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-13: promtail_read_bytes_total стоит на месте, а promtail_file_bytes_total продолжает расти — растущий разрыв значит, что Promtail не успевает читать.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>По метрикам можно понять, что Promtail отстает от чтения файлов логов следующим образом:
+
+1. Проверить метрику `promtail_read_bytes_total`, которая отражает количество байт, прочитанных Promtail.
+2. Проверить метрику `promtail_file_bytes_total`, которая отражает размер файла, который Promtail пытается прочитать.
+3. Если `promtail_file_bytes_total` продолжает расти, а `promtail_read_bytes_total` остается на месте или растет медленнее, это указывает на то, что Promtail застрял на определенной позиции в файле логов.
+
+Для проверки этих метрик можно использовать следующую команду:
+
+```logql
+{job=&quot;promtail&quot;} |= &quot;promtail_read_bytes_total&quot; | json | line_format &quot;{{.ts}} {{.msg}}&quot;
+{job=&quot;promtail&quot;} |= &quot;promtail_file_bytes_total&quot; | json | line_format &quot;{{.ts}} {{.msg}}&quot;
+```
+
+Если `promtail_read_bytes_total` остается на месте или растет медленнее, чем `promtail_file_bytes_total`, это указывает на то, что Promtail застрял и может потребоваться восстановление позиций файла логов.
+
+Источник: RB-13 — Loki Not Ingesting Logs / Promtail Lag</pre></details>
+  <p class="c">Комментарий судьи: Метрики названы верно, но предложены выдуманные LogQL-запросы по именам метрик, которых нет в корпусе.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q36" data-verdict="partial">
+  <h2>q36 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Диск на ноде забит, контейнеры в CrashLoop, no space left on device. Как быстро освободить место и не потерять данные?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-15: усечь самые тяжёлые docker-логи (truncate -s 0 по LogPath, не удалять), docker system prune -f без --volumes; тома postgres/loki не трогать — docker volume prune только после подтверждения L3 и резервной копии; затем перезапустить контейнеры и настроить ротацию логов.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для быстрого освобождения места на диске и предотвращения потери данных, следует выполнить следующие шаги:
+
+1. **Усечь docker-логи тяжёлых контейнеров:**
+```bash
+truncate -s 0 $(docker inspect --format=&#x27;{{.LogPath}}&#x27; vllm_container)
+truncate -s 0 $(docker inspect --format=&#x27;{{.LogPath}}&#x27; loki)
+```
+
+2. **Удалить неиспользуемые docker-объекты:**
+```bash
+docker system prune -f
+```
+
+3. **Настроить ротацию логов (постоянное решение):**
+```yaml
+logging:
+  driver: &quot;json-file&quot;
+  options:
+    max-size: &quot;50m&quot;
+    max-file: &quot;5&quot;
+```
+
+4. **Применить через Ansible:**
+```bash
+ansible-playbook -i inventory/prod playbooks/docker_log_rotation.yml
+```
+
+5. **Перезапустить контейнеры в CrashLoop:**
+```bash
+docker compose up -d --force-recreate
+docker ps -a  # убедиться, что все Up
+```
+
+6. **Проверить восстановление:**
+```bash
+curl -s http://localhost:8001/health | jq .
+df -h /
+```
+
+Эти шаги помогут быстро освободить место на диске и предотвратить дальнейшие проблемы с заполнением диска.
+
+Источник: RB-15 — Диск заполнен на ноде — контейнеры в CrashLoop</pre></details>
+  <p class="c">Комментарий судьи: Не предупреждено, что тома postgres/loki трогать нельзя (volume prune только с подтверждения L3), хотя вопрос про сохранность данных.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q37" data-verdict="correct">
+  <h2>q37 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как настроить ротацию docker-логов, чтобы диск больше не забивался?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-15: в docker-compose.yml задать logging: driver json-file с options max-size: &quot;50m&quot; и max-file: &quot;5&quot;; раскатать через Ansible (playbooks/docker_log_rotation.yml).</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для настройки ротации docker-логов и предотвращения переполнения диска выполните следующие шаги:
+
+1. Обновите файл `docker-compose.yml` для настройки ротации логов:
+```yaml
+logging:
+  driver: &quot;json-file&quot;
+  options:
+    max-size: &quot;50m&quot;
+    max-file: &quot;5&quot;
+```
+
+2. Примените изменения через Ansible:
+```bash
+ansible-playbook -i inventory/prod playbooks/docker_log_rotation.yml
+```
+
+Эти шаги помогут автоматически управлять размером и количеством создаваемых лог-файлов, предотвращая их накопление и переполнение диска.
+
+Источник: RB-15 — Диск заполнен на ноде — контейнеры в CrashLoop</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q38" data-verdict="partial">
+  <h2>q38 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Сборка в GitHub Actions упала: composer пишет, что нужен php ^8.1, а в образе 8.0. Как починить?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-16: обновить базовый образ в Dockerfile: FROM php:8.0-fpm-alpine -&gt; FROM php:8.1-fpm-alpine, закоммитить и убедиться, что пайплайн зелёный; воспроизвести локально через docker build --no-cache.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>**Case A: PHP version mismatch in Dockerfile.**
+
+Update `FROM` to match the platform requirement:
+
+```dockerfile
+- FROM php:8.0-fpm-alpine
++ FROM php:8.1-fpm-alpine
+```
+
+Commit, push, verify pipeline goes green.
+
+Источник: RB-16 — GitHub Actions pipeline fails: docker build or lint step red on push</pre></details>
+  <p class="c">Комментарий судьи: Решение верное, но объяснение написано по-английски, а не по-русски.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q39" data-verdict="correct">
+  <h2>q39 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">A user paid via SBP, the money left their bank account, but the transaction has been stuck in PENDING for 20 minutes. What should the on-call engineer do?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-02: проверить laravel-worker и логи колбэка; взять sbp_operation_id из meta транзакции; запросить сверку у банка-партнёра; если списание подтверждено и card_credited_at IS NULL — довести вручную: php artisan sbp:finalize-transaction --txn=&lt;txn_id&gt; --force.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>На дежурстве инженер должен выполнить следующие действия:
+
+1. **Получить `sbp_operation_id`** из поля `meta` транзакции (см. SQL выше).
+2. **Запросить сверку у банка-партнёра** через внутренний API или вручную через ЛК банка; подтвердить статус операции по `sbp_operation_id`.
+3. Если банк подтверждает успешное списание — **вручную запустить доведение** (временный workaround). Перед запуском убедиться, что зачисление ещё НЕ выполнено (`card_credited_at IS NULL` в SQL ниже), иначе возможно повторное зачисление. Команда идемпотентна по `txn_id`; `--force` только снимает блокировку зависшего `PENDING`, но не отключает защиту от двойного зачисления:
+```bash
+docker exec laravel-app php artisan sbp:finalize-transaction --txn=tx_8f3ac1 --force
+```
+4. Убедиться, что автоконвертация и зачисление прошли (значения должны заполниться, статус — стать терминальным):
+```sql
+SELECT status, card_credited_at, converted_amount_usd FROM transactions WHERE id = &#x27;tx_8f3ac1&#x27;;
+```
+5. Если банк сообщает, что **списание было, но доведение невозможно** — перевести транзакцию в `FAILED` и инициировать возврат через `php artisan sbp:refund --txn=tx_8f3ac1`. Если банк сообщает, что **списания не было** (операция не прошла) — перевести транзакцию в `FAILED` без возврата (возвращать нечего; возврат несписанной суммы создаст недостачу).
+6. После стабилизации — зафиксировать инцидент в Яндекс Трекере и проверить очередь на наличие других зависших `PENDING`.
+
+Источник: RB-02 — СБП-пополнение зависло в PENDING: таймаут колбэка, ручная сверка и доведение</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<p><button id="copy">Скопировать итог</button></p><textarea id="out" readonly></textarea>
+</main><script>
+const res = {};
+function upd(){
+  const ids=[...document.querySelectorAll('.card')].map(c=>c.dataset.id);
+  const done=ids.filter(i=>res[i]); const agree=done.filter(i=>res[i]==='agree').length;
+  document.getElementById('out').value='Ручная проверка: согласен '+agree+'/'+done.length+' ('+ids.length+' в листе). '+
+    done.map(i=>i+'='+(res[i]==='agree'?'да':'нет')).join(', ');
+}
+document.querySelectorAll('.card').forEach(c=>c.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  res[c.dataset.id]=b.dataset.a; c.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); upd();}));
+document.getElementById('copy').onclick=()=>{const t=document.getElementById('out');t.select();navigator.clipboard&&navigator.clipboard.writeText(t.value);};
+upd();
+</script></body></html>

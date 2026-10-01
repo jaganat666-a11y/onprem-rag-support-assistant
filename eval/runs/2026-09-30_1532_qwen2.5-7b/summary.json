@@ -1,0 +1,68 @@
+{
+  "meta": {
+    "started": "2026-09-30T15:32:48",
+    "facade": "http://localhost:8080",
+    "model": {
+      "served_name": "qwen2.5-7b",
+      "weights": "Qwen/Qwen2.5-7B-Instruct-AWQ",
+      "max_model_len": 8192
+    },
+    "questions_file": "questions.jsonl"
+  },
+  "metrics": {
+    "questions": 50,
+    "http_errors": 0,
+    "in_corpus": {
+      "n": 40,
+      "hit@1": 1.0,
+      "hit@8": 1.0,
+      "cites_expected": 1.0,
+      "facts_coverage": 0.883,
+      "refusal_heur": 0.025,
+      "top_rerank_score": {
+        "min": 0.455,
+        "p50": 0.931,
+        "max": 0.996
+      }
+    },
+    "out_of_corpus": {
+      "n": 10,
+      "refusal_heur": 0.4,
+      "top_rerank_score": {
+        "min": 0.0,
+        "p50": 0.005,
+        "max": 0.112
+      }
+    },
+    "latency_s": {
+      "total": {
+        "p50": 41.6,
+        "p95": 52.9
+      },
+      "retrieval": {
+        "p50": 33.9,
+        "p95": 34.3
+      },
+      "generation": {
+        "p50": 7.6,
+        "p95": 18.9
+      }
+    }
+  },
+  "judge": {
+    "judge_model": "claude-sonnet-5-5",
+    "in_correct": 20,
+    "in_correct_russian": 20,
+    "in_partial": 17,
+    "in_incorrect": 3,
+    "in_n": 40,
+    "out_refused_correctly": 4,
+    "out_refused_russian": 4,
+    "out_n": 10,
+    "hallucinations": 3,
+    "false_refusals": 0,
+    "cjk_answers": 6,
+    "stray_cites_script": 13,
+    "stray_cites_judge": 14
+  }
+}

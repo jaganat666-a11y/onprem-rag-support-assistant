@@ -1,0 +1,50 @@
+{"id": "q01", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Шаги верные, но заявлен RB-02, из которого ничего не взято."}
+{"id": "q02", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q03", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Нет проверки отсутствия записи в webhook_events и запроса повтора у эквайера; ссылки RB-01-Diagnosis/Resolution выдуманы."}
+{"id": "q04", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Действия верные, но заявлен RB-03, из которого ничего не взято."}
+{"id": "q05", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q06", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q07", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Не сказано вернуть APP_FX_PROVIDER=fx-provider-main; шаг 3 неточен; заявлен лишний RB-07."}
+{"id": "q08", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "SQL верный, но заявлен RB-02, из которого ничего не взято."}
+{"id": "q09", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q10", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q11", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Ответ верный, но заявлен RB-02, из которого ничего не взято."}
+{"id": "q12", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q13", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Нет проверки BIN-спонсора и manual_review; заявлен лишний RB-02."}
+{"id": "q14", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q15", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q16", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q17", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Пропущено требование идемпотентности повтора (дедупликация по txn_id, только pending)."}
+{"id": "q18", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q19", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q20", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q21", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q22", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q23", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Ответ верный, но заявлен RB-11, из которого ничего не взято."}
+{"id": "q24", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q25", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q26", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q27", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Порядок действий верный, но заявлен RB-09, из которого ничего не взято."}
+{"id": "q28", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q29", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q30", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Решение верное, но заявлен RB-13, из которого ничего не взято."}
+{"id": "q31", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q32", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Диагностика взята из RB-11 про vLLM, а не из RB-13; нет проверки Loki ready и диска, верен только Fix A."}
+{"id": "q33", "verdict": "partial", "hallucination": true, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Метрики названы верно, но запросы метрик promtail через Loki query_range выдуманы и неработоспособны."}
+{"id": "q34", "verdict": "incorrect", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Дан алгоритм из RB-02 вместо шагов RB-14 (pg_stat_activity, pg_terminate_backend, PgBouncer)."}
+{"id": "q35", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q36", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q37", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q38", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q39", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q40", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o01", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o02", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o03", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o04", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o05", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o06", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o07", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o08", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o09", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o10", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}

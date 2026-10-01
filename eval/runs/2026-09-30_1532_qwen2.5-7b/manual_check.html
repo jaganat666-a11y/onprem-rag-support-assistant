@@ -1,0 +1,194 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Ручная проверка судьи</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--mute:#5d6470;--line:#dde1e7;--ok:#1f7a4d;--mid:#a86b00;--bad:#b3261e;--sel:#e8f0fe}
+@media (prefers-color-scheme:dark){:root{--bg:#15171b;--card:#1e2126;--ink:#e6e8eb;--mute:#9aa1ac;--line:#30343b;--sel:#233044}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+main{max-width:880px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px} .q{font-weight:600}
+pre{white-space:pre-wrap;font:13px/1.45 ui-monospace,Consolas,monospace;background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto}
+.v.correct{color:var(--ok)} .v.partial{color:var(--mid)} .v.incorrect{color:var(--bad)} .c{color:var(--mute)}
+.btns button{margin-right:8px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.btns button.on{background:var(--sel);border-color:#6b8fd6}
+#out{width:100%;min-height:70px;font:13px ui-monospace,monospace}
+</style></head><body><main>
+<h1>Ручная проверка судьи — 10 ответов</h1>
+<p>Прочитай эталон и ответ, нажми «согласен» или «не согласен» с вердиктом судьи. Внизу — строка итога: скопируй её в чат.</p>
+
+<section class="card" data-id="o06" data-verdict="correct">
+  <h2>o06 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как настроить потоковую репликацию PostgreSQL на резервную ноду?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В предоставленных фрагментах runbook&#x27;ов нет информации о настройке потоковой репликации PostgreSQL на резервную ноду.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o08" data-verdict="partial">
+  <h2>o08 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Как обновить Kubernetes-кластер до следующей минорной версии?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В提供的runbook片段中没有关于如何更新Kubernetes集群到下一个次要版本的信息。因此，无法从这些runbook片段中直接回答这个问题。
+
+如果你有特定的Kubernetes管理工具或流程，请提供相关细节，我可以根据这些信息给出建议。相关的runbook片段ID为：RB-16 — &quot;GitHub Actions pipeline fails: docker build or lint step red on push&quot; 和 RB-12 — Prometheus scrape DOWN — host.docker.internal не резолвится после рестарта WSL。</pre></details>
+  <p class="c">Комментарий судьи: Отказ честный, но написан на китайском.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o09" data-verdict="correct">
+  <h2>o09 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как включить сотрудникам двухфакторную аутентификацию для входа в админку?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В предоставленных фрагментах runbook&#x27;ов нет информации о том, как включить двухфакторную аутентификацию для сотрудников в админку. Эти документы фокусируются на решении проблем с платежными вебхуками и двойными списаниями.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q02" data-verdict="partial">
+  <h2>q02 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Эквайер иногда присылает одно и то же событие дважды. Как на уровне базы защититься от двойного зачисления?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-01: в webhook_events должно быть ограничение UNIQUE(event_id), а обработчик делает INSERT ... ON CONFLICT DO NOTHING до обновления баланса; если ограничения нет — миграция ALTER TABLE webhook_events ADD CONSTRAINT uq_event_id UNIQUE (event_id). Откат уже случившегося двойного зачисления — только через L3 с согласованием финансового контроля.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для защиты от двойного зачисления в базе данных можно добавить уникальное ограничение на столбец `event_id` в таблице `webhook_events`:
+
+```sql
+ALTER TABLE webhook_events ADD CONSTRAINT uq_event_id UNIQUE (event_id);
+```
+
+Также следует обеспечить, чтобы обработчик вставки делал `INSERT ... ON CONFLICT DO NOTHING`, чтобы игнорировать попытки вставить дубликаты `event_id`.
+
+На основе runbook&#x27;ов ID: RB-01, RB-04.</pre></details>
+  <p class="c">Комментарий судьи: По сути верно (UNIQUE и ON CONFLICT), но ссылка на RB-04 лишняя.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q18" data-verdict="correct">
+  <h2>q18 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Ночная сверка показала расхождение с банковским реестром на 23,52 ₽ по 4 транзакциям. Какие типичные причины?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-07: курс фиксируется на created_at, а банк считает по курсу на settlement_at (+5–30 мин); округление: PHP round($amount, 2) против банковского TRUNCATE(amount, 2).</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Типичные причины расхождения с банковским реестром могут быть:
+
+1. Курс фиксируется на `created_at`, а банк считает по курсу `settlement_at` (+5–30 мин).
+2. PHP `round($amount, 2)` против банковского `TRUNCATE(amount, 2)`.
+
+Опиранье: RB-07 — Расхождение сверки — сумма в БД не совпадает с банковским реестром · Симптом, RB-07 — Расхождение сверки — сумма в БД не совпадает с банковским реестром · Диагностика.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q21" data-verdict="correct">
+  <h2>q21 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">В Telegram Mini App у клиента баланс 0.00 USD, а в приложении MAX всё правильно. Как починить?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-08: сбросить кеш баланса пользователя в Redis: docker exec -it redis redis-cli DEL balance:user:&lt;user_id&gt;; если истёк токен сессии — попросить пользователя выйти и войти в TMA повторно; при массовом сбое — рестарт Redis.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В данном случае можно применить следующие шаги:
+
+1. Принудительно сбросить кеш конкретного пользователя:
+```bash
+docker exec -it redis redis-cli DEL balance:user:10042
+```
+
+Это позволит TMA подтянуть актуальный баланс из базы данных.
+
+На которые runbook&#x27;и опираюсь: RB-08 — &quot;Telegram Mini App: устаревший баланс (кеш / протухший токен сессии)&quot;.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q26" data-verdict="correct">
+  <h2>q26 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Какие метрики vLLM смотреть, если подозреваю переполнение KV-кэша?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-10: vllm:gpu_cache_usage_perc (близко к 100 %), vllm:num_preemptions_total (растёт), vllm:num_requests_waiting (очередь не рассасывается), p95 e2e latency по vllm:e2e_request_latency_seconds_bucket.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для проверки переполнения KV-кэша следует обратить внимание на следующие метрики:
+
+- `vllm:gpu_cache_usage_perc`: показывает использование GPU кэша.
+- `vllm:num_preemptions_total`: отслеживает количество предемпций.
+- `vllm:num_requests_waiting`: отображает количество ожидающих запросов.
+
+Эти метрики доступны через панель `AI Assistant / Inference` в Grafana. Опираюсь на runbook [RB-10 — Высокая latency p95 ассистента: переполнение KV-cache и preemption].</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q32" data-verdict="partial">
+  <h2>q32 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">В Grafana Explore нет свежих логов фасада, хотя Promtail вроде запущен. Что проверить и как починить?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-13: логи самого promtail (ошибка чтения positions-файла), готовность Loki (curl :3100/ready) и место на диске; содержимое /tmp/positions.yaml; самый частый фикс — остановить promtail, удалить битый positions-файл и запустить заново; при нехватке диска — retention или расширение тома.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В данном случае можно следовать шагам из runbook&#x27;а RB-13 — Loki Not Ingesting Logs / Promtail Lag:
+
+1. Проверить, что Promtail запущен и его логи:
+```bash
+docker ps --filter name=promtail
+docker logs promtail --tail=100 2&gt;&amp;1 | grep -E &quot;error|warn|lag|positions&quot;
+```
+
+2. Проверить готовность Loki и давление на диск:
+```bash
+curl -s http://localhost:3100/ready
+df -h /var/lib/docker/volumes/loki_data
+```
+
+3. Проверить Promtail positions файл:
+```bash
+docker exec promtail cat /tmp/positions.yaml
+```
+
+4. Проверить графики в Grafana:
+- Панель `Loki / Chunks` → `Ingester: Log Entries Received Rate`
+- LogQL для здоровья:
+```logql
+{job=&quot;facade&quot;} |= &quot;error&quot; | json | line_format &quot;{{.ts}} {{.msg}}&quot;
+```
+
+5. Если логи не восстанавливаются, выполнить диагностику и попробовать исправления A или B.
+
+Опираюсь на runbook&#x27;и RB-13 и RB-09.</pre></details>
+  <p class="c">Комментарий судьи: Диагностика есть, но нет самого фикса (удаление positions-файла), ссылка на RB-09 лишняя.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q33" data-verdict="correct">
+  <h2>q33 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">По каким метрикам понять, что Promtail отстаёт от чтения файлов логов?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-13: promtail_read_bytes_total стоит на месте, а promtail_file_bytes_total продолжает расти — растущий разрыв значит, что Promtail не успевает читать.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>По метрикам `promtail_read_bytes_total` и `promtail_file_bytes_total` можно понять, что Promtail отстает от чтения файлов логов. Если `promtail_read_bytes_total` показывает статичное значение, а `promtail_file_bytes_total` продолжает расти, это указывает на то, что Promtail застрял на определённом месте в файле логов. Опираюсь на runbook с ID RB-13 — Loki Not Ingesting Logs / Promtail Lag.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q34" data-verdict="partial">
+  <h2>q34 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">В логах Laravel: remaining connection slots are reserved, клиенты не могут пополнить карту. Что делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-14: посмотреть соединения в pg_stat_activity, найти блокирующий запрос через pg_locks; временно завершить блокирующий бэкенд SELECT pg_terminate_backend(&lt;pid&gt;); перезапустить PgBouncer и проверить, что его пул не превышает max_connections; постоянно — EXPLAIN ANALYZE и оптимизация запроса.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В данном случае следует выполнить следующие шаги:
+
+1. Завершить блокирующие процессы:
+```sql
+SELECT pg_terminate_backend(&lt;blocking_pid&gt;);
+```
+
+2. Перезапустить PgBouncer:
+```bash
+docker restart pgbouncer
+```
+
+3. Проверить и настроить пулы соединений:
+```bash
+# Проверить текущие значения
+SHOW max_connections;
+SHOW pgbouncer.max_client_conn;
+SHOW pgbouncer.default_pool_size;
+
+# Проверить алерт в Grafana
+```
+
+4. Разобраться с long-running запросами и оптимизировать их.
+
+На основе runbook&#x27;ов RB-14 и RB-02.</pre></details>
+  <p class="c">Комментарий судьи: Нет поиска blocking_pid, выдуманные команды SHOW pgbouncer.*, ссылка на RB-02 лишняя.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<p><button id="copy">Скопировать итог</button></p><textarea id="out" readonly></textarea>
+</main><script>
+const res = {};
+function upd(){
+  const ids=[...document.querySelectorAll('.card')].map(c=>c.dataset.id);
+  const done=ids.filter(i=>res[i]); const agree=done.filter(i=>res[i]==='agree').length;
+  document.getElementById('out').value='Ручная проверка: согласен '+agree+'/'+done.length+' ('+ids.length+' в листе). '+
+    done.map(i=>i+'='+(res[i]==='agree'?'да':'нет')).join(', ');
+}
+document.querySelectorAll('.card').forEach(c=>c.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  res[c.dataset.id]=b.dataset.a; c.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); upd();}));
+document.getElementById('copy').onclick=()=>{const t=document.getElementById('out');t.select();navigator.clipboard&&navigator.clipboard.writeText(t.value);};
+upd();
+</script></body></html>

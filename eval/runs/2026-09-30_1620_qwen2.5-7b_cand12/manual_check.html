@@ -1,0 +1,215 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Ручная проверка судьи</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--mute:#5d6470;--line:#dde1e7;--ok:#1f7a4d;--mid:#a86b00;--bad:#b3261e;--sel:#e8f0fe}
+@media (prefers-color-scheme:dark){:root{--bg:#15171b;--card:#1e2126;--ink:#e6e8eb;--mute:#9aa1ac;--line:#30343b;--sel:#233044}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+main{max-width:880px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px} .q{font-weight:600}
+pre{white-space:pre-wrap;font:13px/1.45 ui-monospace,Consolas,monospace;background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto}
+.v.correct{color:var(--ok)} .v.partial{color:var(--mid)} .v.incorrect{color:var(--bad)} .c{color:var(--mute)}
+.btns button{margin-right:8px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.btns button.on{background:var(--sel);border-color:#6b8fd6}
+#out{width:100%;min-height:70px;font:13px ui-monospace,monospace}
+</style></head><body><main>
+<h1>Ручная проверка судьи — 10 ответов</h1>
+<p>Прочитай эталон и ответ, нажми «согласен» или «не согласен» с вердиктом судьи. Внизу — строка итога: скопируй её в чат.</p>
+
+<section class="card" data-id="o04" data-verdict="correct">
+  <h2>o04 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как сбросить пароль администратора Grafana, если его забыли?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В предоставленных фрагментах runbook&#x27;ов нет информации о том, как сбросить пароль администратора Grafana, если он забыт. Опишите это действие как самостоятельную задачу вне контекста этих runbook&#x27;ов.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o06" data-verdict="correct">
+  <h2>o06 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как настроить потоковую репликацию PostgreSQL на резервную ноду?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В предоставленных фрагментах runbook&#x27;ов нет информации о настройке потоковой репликации PostgreSQL на резервную ноду.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q03" data-verdict="partial">
+  <h2>q03 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Подтвердили, что вебхук от эквайера потерялся. Как вручную довести зачисление и кому это разрешено делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-01: запросить у эквайера повторную отправку события; временный workaround — docker exec payment-service php artisan payment:replay --txn &lt;txn_id&gt;, только L2/L3 и только после проверки, что записи в webhook_events нет.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для вручной доведки зачисления в случае потери вебхука можно использовать следующую команду:
+
+```bash
+docker exec payment-service php artisan payment:replay --txn tx_8f3ac1
+```
+
+Эта команда разрешена для выполнения только L2 и L3 специалистами.
+
+Опиравшись на runbook&#x27;и RB-01 и RB-01.</pre></details>
+  <p class="c">Комментарий судьи: Команда и L2/L3 названы, но нет обязательной проверки отсутствия записи в webhook_events и запроса повтора у эквайера.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q17" data-verdict="partial">
+  <h2>q17 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Секрет поменяли. Как безопасно переотправить вебхуки, которые упали за последние два часа?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-06: попросить эквайера переотправить или запустить php artisan webhooks:replay --since=&quot;2 hours ago&quot; --status=failed; повтор должен быть идемпотентным — дедупликация по txn_id, переподтверждать только pending, терминальные пропускать.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>1. Идентифицируйте контейнер, который всё ещё использует старый секрет:
+```bash
+for c in webhook-handler payment-gateway; do
+  echo &quot;=== $c ===&quot;; docker exec $c env | grep ACQUIRER_WEBHOOK_SECRET
+done
+```
+
+2. Обновите секрет в нужном сервисе:
+```bash
+# Редактировать docker-compose.override.yml или .env, затем:
+docker compose up -d --no-deps webhook-handler
+```
+
+3. Проверьте, что новый секрет активен:
+```bash
+docker exec webhook-handler env | grep ACQUIRER_WEBHOOK_SECRET
+```
+
+4. Попросите эквайера повторно отправить вебхуки для поражённого интервала времени:
+```bash
+docker exec laravel-backend php artisan webhooks:replay --since=&quot;2 hours ago&quot; --status=failed
+```
+
+5. Мониторинг метрики `acquirer_webhook_401_rate` — она должна вернуться к нулю в течение 2 минут.
+
+Ориентируюсь на runbook с ID RB-06 — Webhook Signature Mismatch After Secret Rotation.</pre></details>
+  <p class="c">Комментарий судьи: Нет требования идемпотентности повтора: дедуп по txn_id, переподтверждать только pending.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q19" data-verdict="correct">
+  <h2>q19 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как вытащить из базы транзакции, у которых сумма не совпадает с банковским реестром?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-07: JOIN transactions с bank_recon_import по b.bank_txn_ref = t.external_ref за вчерашнюю дату с условием ABS(t.amount_rub - b.bank_amount_rub) &gt; 0.01, сортировка по величине дельты.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для выявления транзакций, у которых сумма в базе данных не совпадает с суммой из реестра банка, можно использовать следующий SQL-запрос:
+
+```sql
+SELECT
+    t.id                         AS txn_id,
+    t.user_id,
+    t.amount_rub,
+    t.amount_usd,
+    t.fx_rate,
+    t.created_at,
+    b.bank_amount_rub,
+    (t.amount_rub - b.bank_amount_rub) AS delta_rub
+FROM transactions t
+JOIN bank_recon_import b ON b.bank_txn_ref = t.external_ref
+WHERE DATE(t.created_at) = CURRENT_DATE - 1
+  AND ABS(t.amount_rub - b.bank_amount_rub) &gt; 0.01
+ORDER BY ABS(delta_rub) DESC
+LIMIT 50;
+```
+
+Этот запрос сравнивает сумму транзакции в вашей базе данных (`t.amount_rub`) с суммой, указанной в реестре банка (`b.bank_amount_rub`). Если разница между этими суммами больше 0.01 рубля, то транзакция будет включена в результат. Результат сортируется по абсолютной величине дельты в убывающем порядке и ограничивается первыми 50 транзакциями.
+
+Опираюсь на runbook с ID [RB-07 — Расхождение сверки — сумма в БД не совпадает с банковским реестром · Диагностика].</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q21" data-verdict="correct">
+  <h2>q21 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">В Telegram Mini App у клиента баланс 0.00 USD, а в приложении MAX всё правильно. Как починить?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-08: сбросить кеш баланса пользователя в Redis: docker exec -it redis redis-cli DEL balance:user:&lt;user_id&gt;; если истёк токен сессии — попросить пользователя выйти и войти в TMA повторно; при массовом сбое — рестарт Redis.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В данном случае можно применить следующие шаги:
+
+1. Принудительно сбросить кеш конкретного пользователя:
+```bash
+docker exec -it redis redis-cli DEL balance:user:10042
+```
+
+Это позволит TMA подтянуть актуальный баланс из базы данных.
+
+На какой runbook опираюсь: RB-08 — &quot;Telegram Mini App: устаревший баланс (кеш / протухший токен сессии)&quot;.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q22" data-verdict="correct">
+  <h2>q22 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Какая норма у balance_cache_hit_ratio и при каком значении это уже массовый сбой Redis?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-08: норма — выше 0.90; падение ниже 0.5 означает массовый Redis-промах, повод эскалировать в L3.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Норма у метрики `balance_cache_hit_ratio` — более 0.90. Массовый сбой Redis считается при значении этой метрики ниже 0.5. Опираюсь на RB-08 — &quot;Telegram Mini App: устаревший баланс (кеш / протухший токен сессии)&quot;.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q26" data-verdict="correct">
+  <h2>q26 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Какие метрики vLLM смотреть, если подозреваю переполнение KV-кэша?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-10: vllm:gpu_cache_usage_perc (близко к 100 %), vllm:num_preemptions_total (растёт), vllm:num_requests_waiting (очередь не рассасывается), p95 e2e latency по vllm:e2e_request_latency_seconds_bucket.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для проверки переполнения KV-кэша нужно смотреть следующие метрики:
+
+- `vllm:gpu_cache_usage_perc`: приближается к 100%.
+- `histogram_quantile(0.95, sum by (le) (rate(vllm:e2e_request_latency_seconds_bucket[5m])))`: рост p95 выше 8 с.
+- `vllm:num_preemptions_total`: ненулевой и растущий счётчик.
+- `vllm:num_requests_waiting`: очередь ожидающих запросов не рассасывается.
+
+Опираюсь на runbook [RB-10 — Высокая latency p95 ассистента: переполнение KV-cache и preemption](rb-10-high-latency-kv-cache.md).</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q34" data-verdict="partial">
+  <h2>q34 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">В логах Laravel: remaining connection slots are reserved, клиенты не могут пополнить карту. Что делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-14: посмотреть соединения в pg_stat_activity, найти блокирующий запрос через pg_locks; временно завершить блокирующий бэкенд SELECT pg_terminate_backend(&lt;pid&gt;); перезапустить PgBouncer и проверить, что его пул не превышает max_connections; постоянно — EXPLAIN ANALYZE и оптимизация запроса.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>1. Проверить алерт в Grafana: `pg_connections_near_limit`.
+2. Завершить блокирующий процесс:
+   ```sql
+   SELECT pg_terminate_backend(&lt;blocking_pid&gt;);
+   ```
+3. Перезапустить PgBouncer:
+   ```bash
+   docker restart pgbouncer
+   ```
+
+Ориентируюсь на runbook&#x27;и RB-14 и RB-15.</pre></details>
+  <p class="c">Комментарий судьи: Нет диагностики pg_stat_activity/pg_locks для поиска blocking_pid; лишняя ссылка на RB-15.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q35" data-verdict="partial">
+  <h2>q35 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Как найти в PostgreSQL запрос, который блокирует остальные?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-14: запрос к pg_locks с джойном к pg_stat_activity, где заблокированный NOT granted, а блокирующий granted, — выдаёт blocked_pid / blocking_pid и тексты запросов; долгие запросы — по pg_stat_activity с query_start старше 30 секунд.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Чтобы найти в PostgreSQL запрос, который блокирует остальные, можно использовать следующую команду:
+
+```sql
+SELECT blocked.pid AS blocked_pid, blocked_act.query AS blocked_query,
+       blocking.pid AS blocking_pid, blocking_act.query AS blocking_query
+FROM pg_locks blocked
+JOIN pg_stat_activity blocked_act   ON blocked_act.pid = blocked.pid
+JOIN pg_locks blocking ON blocking.locktype = blocked.locktype
+  AND blocking.database     IS NOT DISTINCT FROM blocked.database
+  AND blocking.relation     IS NOT DISTINCT FROM blocked.relation
+  AND blocking.page         IS NOT DISTINCT FROM blocked.page
+  AND blocking.tuple        IS NOT DISTINCT FROM blocked.tuple
+  AND blocking.virtualxid   IS NOT DISTINCT FROM blocked.virtualxid
+  AND blocking.transactionid IS NOT DISTINCT FROM blocked.transactionid
+  AND blocking.classid      IS NOT DISTINCT FROM blocked.reclassid
+  AND blocking.objid        IS NOT DISTINCT FROM blocked.objid
+  AND blocking.objsubid     IS NOT DISTINCT FROM blocked.objsubid
+  AND blocking.pid != blocked.pid
+JOIN pg_stat_activity blocking_act  ON blocking_act.pid = blocking.pid
+WHERE NOT blocked.granted AND blocking.granted;
+```
+
+Эта команда выведет информацию о блокирующих запросах и запросах, которые они блокируют. Опираюсь на runbook с ID RB-14.</pre></details>
+  <p class="c">Комментарий судьи: В SQL опечатка blocked.reclassid (такого столбца нет), запрос не выполнится.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<p><button id="copy">Скопировать итог</button></p><textarea id="out" readonly></textarea>
+</main><script>
+const res = {};
+function upd(){
+  const ids=[...document.querySelectorAll('.card')].map(c=>c.dataset.id);
+  const done=ids.filter(i=>res[i]); const agree=done.filter(i=>res[i]==='agree').length;
+  document.getElementById('out').value='Ручная проверка: согласен '+agree+'/'+done.length+' ('+ids.length+' в листе). '+
+    done.map(i=>i+'='+(res[i]==='agree'?'да':'нет')).join(', ');
+}
+document.querySelectorAll('.card').forEach(c=>c.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  res[c.dataset.id]=b.dataset.a; c.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); upd();}));
+document.getElementById('copy').onclick=()=>{const t=document.getElementById('out');t.select();navigator.clipboard&&navigator.clipboard.writeText(t.value);};
+upd();
+</script></body></html>

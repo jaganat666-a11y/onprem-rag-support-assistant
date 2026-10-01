@@ -1,0 +1,50 @@
+{"id": "q01", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q02", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Не упомянуто, что откат уже случившегося двойного зачисления — только через L3 с финконтролем; пример INSERT помечен как отсутствующий в runbook'ах."}
+{"id": "q03", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Пропущен основной шаг — запросить у эквайера повторную отправку события; не сказано, что payment:replay — временный workaround."}
+{"id": "q04", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Перед finalize пропущена обязательная проверка card_credited_at IS NULL; нет проверки воркера laravel-worker и логов колбэка."}
+{"id": "q05", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q06", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Вывод «возврат не нужен» верный, но первым шагом предложена выдуманная команда sbp:finalize-transaction --status=failed (хоть и с пометкой) и не объяснён риск недостачи."}
+{"id": "q07", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "URL резервного провайдера в curl выдуман, но помечен как отсутствующий в runbook'ах."}
+{"id": "q08", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q09", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q10", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q11", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Шаблонная версия команды из RB-04 ошибочно помечена как отсутствующая в runbook'ах; конкретный пример совпадает с корпусом."}
+{"id": "q12", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q13", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q14", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q15", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q16", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q17", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Не уточнено, что переподтверждать нужно только pending, а терминальные пропускать."}
+{"id": "q18", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q19", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q20", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Не указаны пороги вызова L3 (60 мин без причины или дельта > 10 000 ₽), а workaround с округлением дан без условия дельты < 50 ₽."}
+{"id": "q21", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Команда DEL balance:user:<user_id> ошибочно помечена как отсутствующая в runbook'ах, хотя она есть в RB-08."}
+{"id": "q22", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q23", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q24", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q25", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q26", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Не упомянута p95 по vllm:e2e_request_latency_seconds_bucket."}
+{"id": "q27", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q28", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q29", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q30", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q31", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q32", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Для нехватки диска Loki не назван основной фикс (расширение тома/retention) и не сказано, что delete освобождает место только через ~24 ч."}
+{"id": "q33", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q34", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Не показано, как найти блокирующий pid (pg_stat_activity/pg_locks), и пропущена проверка, что пул PgBouncer не превышает max_connections."}
+{"id": "q35", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q36", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Нет явного предупреждения, что docker volume prune — только после подтверждения L3 и бэкапа."}
+{"id": "q37", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q38", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Заголовок «Case A» оставлен по-английски как цитата раздела RB-16; git-команды помечены как отсутствующие в runbook'ах."}
+{"id": "q39", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q40", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o01", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o02", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o03", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o04", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o05", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o06", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o07", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o08", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o09", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o10", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}

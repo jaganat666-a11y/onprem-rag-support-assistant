@@ -1,0 +1,44 @@
+# Loki — агрегатор логов (single-binary, файловое хранилище).
+# Один узел, один процесс: всё (distributor/ingester/querier/compactor) в одном
+# бинаре, чанки и индекс лежат на диске в томе loki-data. Для одной ноды этого
+# достаточно; горизонтальное масштабирование (микросервисный режим) — на будущее.
+auth_enabled: false
+
+server:
+  http_listen_port: 3100
+  grpc_listen_port: 9096
+  log_level: info
+
+common:
+  instance_addr: 127.0.0.1
+  path_prefix: /loki
+  storage:
+    filesystem:
+      chunks_directory: /loki/chunks
+      rules_directory: /loki/rules
+  replication_factor: 1
+  ring:
+    kvstore:
+      store: inmemory          # одна нода — кольцо держим в памяти, без consul/etcd
+
+schema_config:
+  configs:
+    - from: 2024-01-01
+      store: tsdb              # современный индекс Loki (v13 + tsdb)
+      object_store: filesystem
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+# Срок хранения логов и компактор (см. RB-13 — фикс B при переполнении диска):
+# compactor с retention_enabled удаляет чанки старше retention_period.
+limits_config:
+  retention_period: 168h        # 7 дней — демо-горизонт, не прод-политика
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+
+compactor:
+  working_directory: /loki/compactor
+  retention_enabled: true
+  delete_request_store: filesystem   # требуется Loki 3.x при retention_enabled

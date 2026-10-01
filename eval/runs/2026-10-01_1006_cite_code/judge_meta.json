@@ -1,0 +1,71 @@
+{
+  "model": "claude-sonnet-5-5",
+  "usage": {
+    "total_cost_usd": 0.3610582,
+    "duration_ms": 36531,
+    "usage": {
+      "input_tokens": 2,
+      "cache_creation_input_tokens": 62836,
+      "cache_read_input_tokens": 2156,
+      "output_tokens": 5564,
+      "output_tokens_details": {
+        "thinking_tokens": 2558
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 62836,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "not_available",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 5564,
+          "cache_read_input_tokens": 2156,
+          "cache_creation_input_tokens": 62836,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 62836
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "modelUsage": {
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 53524,
+        "outputTokens": 23,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.053639,
+        "contextWindow": 200000,
+        "maxOutputTokens": 32000,
+        "thinkingTokens": 0,
+        "canonicalModel": "claude-haiku-4-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      },
+      "claude-sonnet-5-5": {
+        "inputTokens": 2,
+        "outputTokens": 5564,
+        "cacheReadInputTokens": 2156,
+        "cacheCreationInputTokens": 62836,
+        "webSearchRequests": 0,
+        "costUSD": 0.3074192,
+        "contextWindow": 1000000,
+        "maxOutputTokens": 128000,
+        "thinkingTokens": 2558,
+        "canonicalModel": "claude-sonnet-5-5",
+        "provider": "firstParty",
+        "costBasis": "list"
+      }
+    }
+  }
+}

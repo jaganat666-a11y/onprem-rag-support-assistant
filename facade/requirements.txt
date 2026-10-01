@@ -1,0 +1,17 @@
+# Тонкий API-фасад над RAG-слоем.
+#   fastapi + uvicorn — веб-слой (/ask, /health);
+#   sentence-transformers + numpy — тот же RAG-стек, что и rag/requirements.txt
+#   (эмбеддер bge-m3 и реранкер bge-reranker-v2-m3 на CPU).
+# torch ставится отдельно CPU-сборкой в Dockerfile (без CUDA), чтобы не тянуть
+# гигабайты GPU-колёс — фасаду GPU не нужен.
+# Версии закреплены по рабочему образу (01.10.2026): без пинов каждая пересборка
+# подтягивала новые версии, и замеры eval/ переставали быть сравнимыми.
+fastapi==0.142.2
+uvicorn[standard]==0.54.0
+sentence-transformers==6.1.0
+# транзитивные, но влияют на поведение моделей — тоже закреплены
+transformers==5.17.0
+huggingface_hub==1.33.0
+numpy==2.4.6
+# журнал запросов /ask в PostgreSQL (SQL-слой, docs/sql.md)
+psycopg2-binary==2.9.13

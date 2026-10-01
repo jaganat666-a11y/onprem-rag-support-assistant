@@ -1,0 +1,50 @@
+{"id": "q01", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Шаги верные, но указана ссылка на RB-04, из которого ничего не взято."}
+{"id": "q02", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "По сути верно (UNIQUE и ON CONFLICT), но ссылка на RB-04 лишняя."}
+{"id": "q03", "verdict": "incorrect", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Нет команды payment:replay и запроса повтора у эквайера; согласование с финконтролем относится к откату дубля, а не к потере."}
+{"id": "q04", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Только эскалация: нет sbp_operation_id, сверки с банком и команды finalize с проверкой card_credited_at."}
+{"id": "q05", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q06", "verdict": "incorrect", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Противоречит корпусу: при отсутствии списания возврат не делают, транзакцию переводят в FAILED."}
+{"id": "q07", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Не задан APP_FX_PROVIDER=fx-provider-fallback, поэтому переключения нет; ссылка на RB-07 лишняя."}
+{"id": "q08", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "SQL верный, но ссылка на RB-02 лишняя."}
+{"id": "q09", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q10", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q11", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q12", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q13", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Нет queue:resume и retry после восстановления, эскалация при >15 мин указана на L2 вместо L3, ссылка на RB-02 лишняя."}
+{"id": "q14", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q15", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q16", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q17", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q18", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q19", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q20", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q21", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q22", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q23", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q24", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Метрика верная, но ссылка на RB-11 лишняя."}
+{"id": "q25", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Пропущен главный шаг: перезапуск vLLM с меньшим --max-num-seqs."}
+{"id": "q26", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q27", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Порядок верный, но ссылка на RB-09 лишняя."}
+{"id": "q28", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q29", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q30", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Решение с extra_hosts есть, но ссылка на RB-13 лишняя."}
+{"id": "q31", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q32", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Диагностика есть, но нет самого фикса (удаление positions-файла), ссылка на RB-09 лишняя."}
+{"id": "q33", "verdict": "correct", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "q34", "verdict": "partial", "hallucination": true, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Нет поиска blocking_pid, выдуманные команды SHOW pgbouncer.*, ссылка на RB-02 лишняя."}
+{"id": "q35", "verdict": "incorrect", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": false, "comment": "Запрос верный, но описание blocked/blocking перепутано, можно завершить не тот процесс."}
+{"id": "q36", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Шаги верны, но нет предупреждения про тома и подтверждение L3; ссылка на RB-13 лишняя."}
+{"id": "q37", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Ответ верный, но ссылка на RB-13 лишняя."}
+{"id": "q38", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": true, "stray_cite": false, "comment": "Решение верное, но текст ответа написан по-английски."}
+{"id": "q39", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": false, "stray_cite": true, "comment": "Шаги верны, но ссылка на RB-06 лишняя."}
+{"id": "q40", "verdict": "partial", "hallucination": false, "refused": false, "not_russian": true, "stray_cite": false, "comment": "Содержание верное, но основная часть ответа на китайском."}
+{"id": "o01", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o02", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o03", "verdict": "incorrect", "hallucination": true, "refused": true, "not_russian": true, "stray_cite": false, "comment": "После отказа выдана выдуманная процедура перевыпуска сертификата, причём на китайском."}
+{"id": "o04", "verdict": "partial", "hallucination": false, "refused": true, "not_russian": true, "stray_cite": false, "comment": "Отказ честный, но написан на китайском."}
+{"id": "o05", "verdict": "incorrect", "hallucination": true, "refused": true, "not_russian": false, "stray_cite": false, "comment": "Признано отсутствие в runbook'ах, но дана выдуманная процедура с командами Kafka."}
+{"id": "o06", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o07", "verdict": "partial", "hallucination": false, "refused": true, "not_russian": true, "stray_cite": false, "comment": "Отказ честный, но написан на китайском."}
+{"id": "o08", "verdict": "partial", "hallucination": false, "refused": true, "not_russian": true, "stray_cite": false, "comment": "Отказ честный, но написан на китайском."}
+{"id": "o09", "verdict": "correct", "hallucination": false, "refused": true, "not_russian": false, "stray_cite": false, "comment": ""}
+{"id": "o10", "verdict": "partial", "hallucination": false, "refused": true, "not_russian": true, "stray_cite": false, "comment": "Отказ честный, но написан на китайском."}

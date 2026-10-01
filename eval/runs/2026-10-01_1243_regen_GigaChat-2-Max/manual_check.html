@@ -1,0 +1,311 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Ручная проверка судьи</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--mute:#5d6470;--line:#dde1e7;--ok:#1f7a4d;--mid:#a86b00;--bad:#b3261e;--sel:#e8f0fe}
+@media (prefers-color-scheme:dark){:root{--bg:#15171b;--card:#1e2126;--ink:#e6e8eb;--mute:#9aa1ac;--line:#30343b;--sel:#233044}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+main{max-width:880px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px} .q{font-weight:600}
+pre{white-space:pre-wrap;font:13px/1.45 ui-monospace,Consolas,monospace;background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto}
+.v.correct{color:var(--ok)} .v.partial{color:var(--mid)} .v.incorrect{color:var(--bad)} .c{color:var(--mute)}
+.btns button{margin-right:8px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.btns button.on{background:var(--sel);border-color:#6b8fd6}
+#out{width:100%;min-height:70px;font:13px ui-monospace,monospace}
+</style></head><body><main>
+<h1>Ручная проверка судьи — 10 ответов</h1>
+<p>Прочитай эталон и ответ, нажми «согласен» или «не согласен» с вердиктом судьи. Внизу — строка итога: скопируй её в чат.</p>
+
+<section class="card" data-id="o08" data-verdict="correct">
+  <h2>o08 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как обновить Kubernetes-кластер до следующей минорной версии?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Уверенного ответа в runbook&#x27;ах нет.
+Ближе всего по поиску — проверьте, подходит ли:
+- RB-12 — Prometheus scrape DOWN — host.docker.internal не резолвится после рестарта WSL
+- RB-09 — vLLM OOM — контейнер упал из-за нехватки VRAM
+- RB-16 — GitHub Actions pipeline fails: docker build or lint step red on push
+Вопрос передан дежурному инженеру.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o09" data-verdict="correct">
+  <h2>o09 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как включить сотрудникам двухфакторную аутентификацию для входа в админку?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Уверенного ответа в runbook&#x27;ах нет.
+Ближе всего по поиску — проверьте, подходит ли:
+- RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера
+- RB-04 — Двойное списание по карте (double charge)
+- RB-03 — Автоконвертация RUB→USD: провайдер курса недоступен, платёж завис
+Вопрос передан дежурному инженеру.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q04" data-verdict="partial">
+  <h2>q04 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Платёж по СБП висит в PENDING уже 20 минут, у клиента деньги списаны. Что делать дежурному?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-02: проверить воркер laravel-worker и логи колбэка; взять sbp_operation_id из meta транзакции; запросить сверку у банка-партнёра; если банк подтвердил списание и card_credited_at IS NULL — довести вручную: php artisan sbp:finalize-transaction --txn=&lt;txn_id&gt; --force; затем проверить статус и зачисление.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>### Шаги решения согласно RB-02:
+
+1. **Получить `sbp_operation_id`:**
+   ```sql
+   SELECT id, user_id, status, amount_rub, created_at, updated_at, meta-&gt;&gt;&#x27;sbp_operation_id&#x27; AS sbp_op
+   FROM transactions
+   WHERE id = &#x27;tx_8f3ac1&#x27;;
+   ```
+   
+2. **Запросить сверку у банка-партнёра**: Подтвердите статус операции по полученному ранее `sbp_operation_id`.
+
+3. **Вручную запустить доведение**, если банк подтвердил успешное списание средств:
+   ```bash
+   docker exec laravel-app php artisan sbp:finalize-transaction --txn=tx_8f3ac1 --force
+   ```
+
+4. **Проверить состояние транзакции** после запуска доведения:
+   ```sql
+   SELECT status, card_credited_at, converted_amount_usd FROM transactions WHERE id = &#x27;tx_8f3ac1&#x27;;
+   ```
+
+5. Если банку удалось успешно провести операцию, но доведение завершить невозможно — переведите транзакцию в `FAILED` и выполните возврат:
+   ```bash
+   php artisan sbp:refund --txn=tx_8f3ac1
+   ```
+
+6. Если банк сообщил об отмене операции (средства не были списаны) — просто переведите транзакцию в `FAILED` без выполнения возврата.
+
+7. Зафиксируйте инцидент в Яндекс Трекере и проверьте очередь на наличие других зависших платежей в состоянии `PENDING`.
+
+Источник: RB-02 — СБП-пополнение зависло в PENDING: таймаут колбэка, ручная сверка и доведение</pre></details>
+  <p class="c">Комментарий судьи: Нет обязательной проверки card_credited_at IS NULL перед finalize и проверки воркера.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q06" data-verdict="incorrect">
+  <h2>q06 · <span class="v incorrect">судья: неверно</span></h2>
+  <p class="q">Банк ответил, что списания по этой операции СБП не было. Нужно ли оформлять клиенту возврат?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-02: нет. Если списания не было, транзакцию переводят в FAILED без возврата — возвращать нечего, возврат несписанной суммы создаст недостачу. Возврат (sbp:refund) нужен, только когда списание было, но довести зачисление невозможно.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Из приведённых фрагментов следует такой порядок действий:
+
+1. Запустить команду перевода транзакции в состояние `FAILED`:
+```bash
+docker exec laravel-app php artisan sbp:finalize-transaction --txn=tx_8f3ac1 --status=failed
+```
+⚠️ Этих строк нет в runbook&#x27;ах — не выполнять без проверки:
+- `docker exec laravel-app php artisan sbp:finalize-transaction --txn=tx_8f3ac1 --status=failed`
+(Команды явного оформления возврата здесь нет.)
+
+2. Проверьте итоговый статус транзакции и дату зачисления:
+```sql
+SELECT status, card_credited_at, converted_amount_usd FROM transactions WHERE id = &#x27;tx_8f3ac1&#x27;;
+```
+
+В данном случае оформление возврата пользователю не требуется, так как банк подтвердил отсутствие списания средств. Оформлять возврат можно лишь тогда, когда есть подтверждение успешного списания денег со счета клиента банком.
+
+Источник: RB-02 — СБП-пополнение зависло в PENDING: таймаут колбэка, ручная сверка и доведение</pre></details>
+  <p class="c">Комментарий судьи: Вывод «возврат не нужен» верен, но предложена выдуманная команда sbp:finalize-transaction --status=failed.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q07" data-verdict="partial">
+  <h2>q07 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Рубли списались, а доллары на карту не пришли, в приложении статус processing. В логах conversion-service: FX rate fetch failed, status=503. Как чинить?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-03: переключить conversion-service на резервного провайдера (APP_FX_PROVIDER=fx-provider-fallback в окружении сервиса, config:clear, рестарт), затем запустить компенсацию зависших саг: php artisan saga:compensate --status=FX_PENDING --older-than=5; после восстановления основного провайдера вернуть fx-provider-main и уведомить пользователей.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>### Шаги решения
+
+#### Шаг 1 (временный workaround)
+1. Переключите conversion-service на резервного FX-провайдера:
+    ```bash
+    # выставить APP_FX_PROVIDER=fx-provider-fallback в окружении сервиса
+    # (через docker-compose override / переменную деплоя), затем:
+    docker exec conversion-service php artisan config:clear
+    docker restart conversion-service
+    ```
+   Проверьте доступность резервного провайдера:
+    ```bash
+    curl -v --max-time 5 https://fx-provider-fallback.internal/api/rate?pair=USDRUB
+    ```
+⚠️ Этих строк нет в runbook&#x27;ах — не выполнять без проверки:
+- `curl -v --max-time 5 https://fx-provider-fallback.internal/api/rate?pair=USDRUB`
+
+#### Шаг 2
+2. Запустите компенсирующую транзакцию для вязнувших саг:
+    ```bash
+    php artisan saga:compensate --status=FX_PENDING --older-than=5
+    ```
+
+#### Шаг 3
+3. После восстановления основного провайдера выполните следующие действия:
+    - Верните переменную окружения `APP_FX_PROVIDER=fx-provider-main`.
+    - Перезапустите контейнер:
+        ```bash
+        docker restart conversion-service
+        ```
+    - Убедитесь, что очередь транзакций со статусом `FX_PENDING` пуста.
+
+#### Шаг 4
+4. Уведомьте пострадавших пользователей через сервис нотификаций.
+
+Источник: RB-03 — Автоконвертация RUB→USD: провайдер курса недоступен, платёж завис</pre></details>
+  <p class="c">Комментарий судьи: Основные шаги верны, но URL fx-provider-fallback.internal в curl выдуман.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q23" data-verdict="correct">
+  <h2>q23 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Контейнер vLLM упал, в логах CUDA out of memory. Какой временный обход?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-09: перезапустить vLLM с уменьшенными параметрами — --max-model-len 4096 и --gpu-memory-utilization 0.80 (это ограничивает контекст ассистента); затем проверить /health vLLM и фасада; постоянный фикс — зафиксировать параметры в docker-compose.yml.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Из runbook-а RB-09 следует выполнить следующие шаги временного решения проблемы:
+
+### Шаг 1 (временный workaround).
+Перезапустить контейнер с уменьшенными параметрами:
+
+```bash
+docker stop vllm &amp;&amp; docker rm vllm
+
+docker run -d --name vllm --gpus all --ipc=host \
+  -p 8000:8000 \
+  vllm/vllm-openai:latest \
+  --model Qwen/Qwen2.5-7B-Instruct-AWQ \
+  --max-model-len 4096 \
+  --gpu-memory-utilization 0.80 \
+  --dtype auto
+```
+
+&gt; **Временный workaround:** снижение параметра `--max-model-len` до 4096 ограничивает длину контекста ассистента. Это достаточно для запросов по runbook-ам, однако длинные диалоги будут обрезаться.
+
+### Шаг 2.
+Убедиться, что фасад и модуль извлечения информации стали доступны:
+
+```bash
+curl -s http://localhost:8000/health
+curl -s http://localhost:8080/health
+```
+
+### Шаг 3 (постоянное решение).
+Зафиксировать измененные параметры в файле конфигурации `docker-compose.yml` и отправить изменения на ревью через Merge Request в GitLab.
+
+### Шаг 4.
+Проверить в Grafana, что потребление видеопамяти (VRAM) стабильно удерживается ниже отметки 7000 MiB.
+
+Источник: RB-09 — vLLM OOM — контейнер упал из-за нехватки VRAM</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q26" data-verdict="correct">
+  <h2>q26 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Какие метрики vLLM смотреть, если подозреваю переполнение KV-кэша?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-10: vllm:gpu_cache_usage_perc (близко к 100 %), vllm:num_preemptions_total (растёт), vllm:num_requests_waiting (очередь не рассасывается), p95 e2e latency по vllm:e2e_request_latency_seconds_bucket.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Если подозреваете переполнение KV-кэша, нужно посмотреть следующие метрики vLLM:
+
+- `vllm:gpu_cache_usage_perc`: показывает процент использования GPU KV cache. Приближение к 100 % указывает на возможное переполнение.
+- `vllm:num_preemptions_total`: счетчик количества прерываний обработки запросов из-за нехватки ресурсов или заполнения очереди. Ненулевое значение говорит о наличии проблем с ресурсами.
+- `vllm:num_requests_waiting`: количество запросов, стоящих в очереди ожидания выполнения. Рост этой метрики свидетельствует о том, что новые запросы не могут быть обработаны сразу.
+
+Эти метрики можно увидеть на панели Grafana `AI Assistant / Inference`.
+
+Источник: RB-10 — Высокая latency p95 ассистента: переполнение KV-cache и preemption</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q29" data-verdict="correct">
+  <h2>q29 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Через сколько времени L2 должен эскалировать на L3 проблему с 502 фасада и что приложить?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-11: если перезапуск vLLM не помог за 10 минут; приложить вывод docker ps, последние 50 строк docker logs vllm и ответ curl /health.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Из фрагмента runbook-а следует, что если после выполнения диагностики и попыток восстановления контейнера проблема сохраняется более 10 минут, то необходимо эскалировать её на уровень L3. Вместе с этим нужно приложить следующие данные:
+
+- Вывод команды `docker ps`
+- Последние 50 строк вывода команды `docker logs vllm`
+- Ответ от запроса `curl /health`
+
+Источник: RB-11 — FastAPI-фасад 502 — upstream vLLM недоступен</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q34" data-verdict="partial">
+  <h2>q34 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">В логах Laravel: remaining connection slots are reserved, клиенты не могут пополнить карту. Что делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-14: посмотреть соединения в pg_stat_activity, найти блокирующий запрос через pg_locks; временно завершить блокирующий бэкенд SELECT pg_terminate_backend(&lt;pid&gt;); перезапустить PgBouncer и проверить, что его пул не превышает max_connections; постоянно — EXPLAIN ANALYZE и оптимизация запроса.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>### Шаги решения согласно RB-14:
+
+#### Временный workaround:
+1. Завершить блокирующий бэкенд по найденному ранее PID:
+    ```sql
+    SELECT pg_terminate_backend(&lt;blocking_pid&gt;);
+    ```
+
+#### Фикс пула:
+2. Проверить состояние контейнера PgBouncer:
+    ```bash
+    docker ps | grep pgbouncer
+    ```
+   
+3. Перезапустить PgBouncer для сброса зависших клиентских соединений:
+    ```bash
+    docker restart pgbouncer
+    ```
+
+После выполнения указанных шагов убедиться, что число активных соединений нормализовалось, а алерт в Grafana закрылся в течение двух минут.
+
+Если проблема повторяется регулярно, требуется постоянный фикс:
+- Разобраться с причиной длительных запросов (`EXPLAIN ANALYZE`);
+- Добавить необходимые индексы или оптимизировать запрос;
+- При необходимости увеличить значение параметра `max_connections` в конфигурации PostgreSQL (`postgresql.conf`) и скорректировать настройки пула соединений в PgBouncer (`pgbouncer.ini`).
+
+Источник: RB-14 — PostgreSQL — исчерпан пул соединений, блокировки от long-running запроса</pre></details>
+  <p class="c">Комментарий судьи: Не сказано, как найти блокирующий pid (pg_stat_activity/pg_locks), хотя terminate требует его.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q35" data-verdict="correct">
+  <h2>q35 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как найти в PostgreSQL запрос, который блокирует остальные?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-14: запрос к pg_locks с джойном к pg_stat_activity, где заблокированный NOT granted, а блокирующий granted, — выдаёт blocked_pid / blocking_pid и тексты запросов; долгие запросы — по pg_stat_activity с query_start старше 30 секунд.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Из runbook RB-14 приведены следующие шаги и команды для поиска блокирующего запроса в PostgreSQL:
+
+### 1. Найти long-running и блокирующие запросы:
+```sql
+SELECT pid, now() - pg_stat_activity.query_start AS duration,
+       usename, application_name, state, wait_event_type, wait_event,
+       left(query, 120) AS query_snippet
+FROM pg_stat_activity
+WHERE state != &#x27;idle&#x27;
+  AND query_start &lt; now() - interval &#x27;30 seconds&#x27;
+ORDER BY duration DESC;
+```
+
+### 2. Найти цепочку блокировок:
+```sql
+SELECT blocked.pid AS blocked_pid, blocked_act.query AS blocked_query,
+       blocking.pid AS blocking_pid, blocking_act.query AS blocking_query
+FROM pg_locks blocked
+JOIN pg_stat_activity blocked_act   ON blocked_act.pid = blocked.pid
+JOIN pg_locks blocking ON blocking.locktype = blocked.locktype
+  AND blocking.database     IS NOT DISTINCT FROM blocked.database
+  AND blocking.relation     IS NOT DISTINCT FROM blocked.relation
+  AND blocking.page         IS NOT DISTINCT FROM blocked.page
+  AND blocking.tuple        IS NOT DISTINCT FROM blocked.tuple
+  AND blocking.virtualxid   IS NOT DISTINCT FROM blocked.virtualxid
+  AND blocking.transactionid IS NOT DISTINCT FROM blocked.transactionid
+  AND blocking.classid      IS NOT DISTINCT FROM blocked.classid
+  AND blocking.objid        IS NOT DISTINCT FROM blocked.objid
+  AND blocking.objsubid     IS NOT DISTINCT FROM blocked.objsubid
+  AND blocking.pid != blocked.pid
+JOIN pg_stat_activity blocking_act  ON blocking_act.pid = blocking.pid
+WHERE NOT blocked.granted AND blocking.granted;
+```
+
+Источник: RB-14 — PostgreSQL — исчерпан пул соединений, блокировки от long-running запроса</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<p><button id="copy">Скопировать итог</button></p><textarea id="out" readonly></textarea>
+</main><script>
+const res = {};
+function upd(){
+  const ids=[...document.querySelectorAll('.card')].map(c=>c.dataset.id);
+  const done=ids.filter(i=>res[i]); const agree=done.filter(i=>res[i]==='agree').length;
+  document.getElementById('out').value='Ручная проверка: согласен '+agree+'/'+done.length+' ('+ids.length+' в листе). '+
+    done.map(i=>i+'='+(res[i]==='agree'?'да':'нет')).join(', ');
+}
+document.querySelectorAll('.card').forEach(c=>c.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  res[c.dataset.id]=b.dataset.a; c.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); upd();}));
+document.getElementById('copy').onclick=()=>{const t=document.getElementById('out');t.select();navigator.clipboard&&navigator.clipboard.writeText(t.value);};
+upd();
+</script></body></html>

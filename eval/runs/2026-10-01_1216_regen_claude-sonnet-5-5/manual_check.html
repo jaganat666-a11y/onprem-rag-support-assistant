@@ -1,0 +1,455 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Ручная проверка судьи</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--mute:#5d6470;--line:#dde1e7;--ok:#1f7a4d;--mid:#a86b00;--bad:#b3261e;--sel:#e8f0fe}
+@media (prefers-color-scheme:dark){:root{--bg:#15171b;--card:#1e2126;--ink:#e6e8eb;--mute:#9aa1ac;--line:#30343b;--sel:#233044}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+main{max-width:880px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px} .q{font-weight:600}
+pre{white-space:pre-wrap;font:13px/1.45 ui-monospace,Consolas,monospace;background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto}
+.v.correct{color:var(--ok)} .v.partial{color:var(--mid)} .v.incorrect{color:var(--bad)} .c{color:var(--mute)}
+.btns button{margin-right:8px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.btns button.on{background:var(--sel);border-color:#6b8fd6}
+#out{width:100%;min-height:70px;font:13px ui-monospace,monospace}
+</style></head><body><main>
+<h1>Ручная проверка судьи — 10 ответов</h1>
+<p>Прочитай эталон и ответ, нажми «согласен» или «не согласен» с вердиктом судьи. Внизу — строка итога: скопируй её в чат.</p>
+
+<section class="card" data-id="o07" data-verdict="correct">
+  <h2>o07 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Сколько стоит обслуживание виртуальной карты в месяц?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать тарифы.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Уверенного ответа в runbook&#x27;ах нет.
+Ближе всего по поиску — проверьте, подходит ли:
+- RB-05 — Выпуск виртуальной карты: таймаут BIN-спонсора, очередь задач застряла
+- RB-02 — СБП-пополнение зависло в PENDING: таймаут колбэка, ручная сверка и доведение
+- RB-03 — Автоконвертация RUB→USD: провайдер курса недоступен, платёж завис
+Вопрос передан дежурному инженеру.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o10" data-verdict="correct">
+  <h2>o10 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как оплачиваются дежурства в выходные и праздники?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать условия.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Уверенного ответа в runbook&#x27;ах нет.
+Ближе всего по поиску — проверьте, подходит ли:
+- RB-10 — Высокая latency p95 ассистента: переполнение KV-cache и preemption
+- RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера
+- RB-04 — Двойное списание по карте (double charge)
+Вопрос передан дежурному инженеру.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q03" data-verdict="correct">
+  <h2>q03 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Подтвердили, что вебхук от эквайера потерялся. Как вручную довести зачисление и кому это разрешено делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-01: запросить у эквайера повторную отправку события; временный workaround — docker exec payment-service php artisan payment:replay --txn &lt;txn_id&gt;, только L2/L3 и только после проверки, что записи в webhook_events нет.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>## Ручное зачисление при потере вебхука (RB-01, «Решение», п. 1 и п. 3)
+
+**Кому разрешено:** только L2/L3. Команда зачисления — временный workaround. L1 её выполнять не должен: при подтверждённой потере он передаёт обращение L2 немедленно (менее чем за 10 минут).
+
+**Шаги:**
+
+1. Убедиться, что Nginx принял запрос (шаг 1 диагностики):
+```bash
+docker logs nginx --since 10m 2&gt;&amp;1 | grep &quot;POST /api/webhooks/payment&quot;
+```
+2. Если Nginx запрос не принял, проверить сертификат и firewall на стороне эквайера.
+3. Запросить повторную отправку события у эквайера через его портал или API.
+4. Перед ручным запуском убедиться, что записи в `webhook_events` нет (шаг 3 диагностики):
+```sql
+SELECT event_id, txn_id, status, created_at, processed_at
+FROM webhook_events
+WHERE txn_id = &#x27;tx_8f3ac1&#x27;
+ORDER BY created_at;
+```
+Отсутствие ряда означает, что вебхук не дошёл.
+5. Только после этого вручную запустить зачисление:
+```bash
+docker exec payment-service php artisan payment:replay --txn tx_8f3ac1
+```
+6. Создать тикет в Яндекс Трекере с типом «Инцидент» и приложить `event_id`, `txn_id` и дамп из `webhook_events`.
+
+**Важно:** использовать команду `payment:replay` можно только при подтверждённой потере и после проверки, что записи в `webhook_events` нет.
+
+**Дополнительно по эскалации:** если затронуто более 5 пользователей, L2 должен немедленно эскалировать случай в L3. Масштаб оценивается запросом из runbook&#x27;а:
+```sql
+SELECT COUNT(*) FROM webhook_events WHERE status=&#x27;pending&#x27; AND created_at &gt; NOW()-INTERVAL &#x27;30 min&#x27;
+```
+
+Источник: RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q17" data-verdict="correct">
+  <h2>q17 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Секрет поменяли. Как безопасно переотправить вебхуки, которые упали за последние два часа?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-06: попросить эквайера переотправить или запустить php artisan webhooks:replay --since=&quot;2 hours ago&quot; --status=failed; повтор должен быть идемпотентным — дедупликация по txn_id, переподтверждать только pending, терминальные пропускать.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Подходит RB-06 «Webhook Signature Mismatch After Secret Rotation». Ниже шаги из раздела «Решение».
+
+## Немедленное исправление
+
+**1. Найдите контейнер, который всё ещё использует старый секрет.** Для этого выполните шаг 2 диагностики:
+```bash
+for c in webhook-handler payment-gateway; do
+  echo &quot;=== $c ===&quot;; docker exec $c env | grep ACQUIRER_WEBHOOK_SECRET
+done
+```
+
+**2. Обновите секрет в окружении затронутого сервиса:**
+```bash
+# Edit docker-compose.override.yml or .env, then:
+docker compose up -d --no-deps webhook-handler
+```
+
+**3. Убедитесь, что новый секрет применился:**
+```bash
+docker exec webhook-handler env | grep ACQUIRER_WEBHOOK_SECRET
+```
+
+**4. Переотправьте упавшие вебхуки.** Попросите эквайера повторить вебхуки за затронутый период или запустите ручную переобработку:
+```bash
+docker exec laravel-backend php artisan webhooks:replay --since=&quot;2 hours ago&quot; --status=failed
+```
+Повтор обязан быть идемпотентным:
+- Убедитесь, что обработчик дедуплицирует по `txn_id`, чтобы уже зачисленные транзакции не пополнились дважды.
+- Повторно подтверждайте только транзакции в статусе `pending`.
+- Пропускайте всё, что уже в терминальном статусе.
+
+**5. Следите за метрикой `acquirer_webhook_401_rate`.** Она должна упасть до нуля в течение 2 минут.
+
+## Временный обходной путь `[ВРЕМЕННЫЙ]`
+Применяйте его, если повтор недоступен. Вручную сверьте зависшие `pending`-транзакции через бэк-офис эквайера и обновите статусы напрямую в PostgreSQL под надзором DBA.
+
+## Профилактика
+Добавьте в runbook ротации секретов smoke-тест: отправьте тестовый вебхук с новым HMAC и убедитесь, что вернулся HTTP 200, до вывода из обращения старого секрета.
+
+## Когда эскалировать
+Если повтор недоступен или зависших транзакций больше 200, эскалируйте на L3 (дежурный DevOps и руководитель бэкенда). Для L3 приложите дамп `docker logs webhook-handler`, выгрузку из Loki, результат SQL по зависшим транзакциям и номер обращения в поддержку эквайера.
+
+Источник: RB-06 — Webhook Signature Mismatch After Secret Rotation</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q20" data-verdict="correct">
+  <h2>q20 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Дельта сверки 5 000 рублей, сейчас ночь. Будить L2 или можно подождать до утра?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-07: будить L2 немедленно — при дельте больше 100 ₽ или больше 10 транзакций ждать утра нельзя. Если причина не найдена за 60 минут или дельта больше 10 000 ₽ — подключать L3.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>**Будить L2 нужно, ждать утра нельзя.**
+
+Согласно разделу «Эскалация» RB-07 для L1: если дельта &gt; 100 ₽ или расходящихся транзакций &gt; 10, нужно немедленно будить L2 и не ждать утра. Дельта 5 000 ₽ заметно превышает порог в 100 ₽. Кроме того, при дельте &gt; 1 000 ₽ требуется ручная сверка до открытия следующего операционного дня.
+
+Что делать дальше:
+
+**L1 (сейчас):**
+- Проверить алерт в Grafana.
+- Зафиксировать дельту и количество расходящихся транзакций.
+- Немедленно разбудить L2.
+
+**L2 (после подъёма):**
+- Запустить SQL-запросы из раздела «Диагностика» и установить причину (курс, округление или дублирование).
+- Применить workaround при необходимости. Учтите, что временный workaround (тикет с меткой `recon-rounding` и корректировка через `reconciliation_adjustments`) рассчитан на дельту &lt; 50 ₽ с подтверждённой причиной в виде округления, поэтому при 5 000 ₽ он, скорее всего, не подходит.
+- Приложить к тикету: дату реестра, значения `db_total`, `bank_total`, список `txn_id` с дельтами.
+
+**Когда звать L3:** если причина не установлена за 60 минут. Порог по дельте для L3 (&gt; 10 000 ₽) пока не достигнут.
+
+Шаги раздела «Решение» (на случай, если L2 установит причину в курсе или округлении):
+1. Выгрузить список `txn_id` с дельтой из SQL диагностики (шаг 4).
+2. Для каждой транзакции сверить поле `fx_rate` с архивом курсов (`fx_rates`). Если курс расходится, пересчитать сумму вручную и сформировать корректирующую запись в `reconciliation_adjustments`.
+3. Временный workaround: только если дельта &lt; 50 ₽ и причина подтверждена как округление. Создать задачу в Яндекс Трекер с меткой `recon-rounding` и провести корректировку через `reconciliation_adjustments` до следующего прогона.
+4. Постоянный фикс: привести стратегию округления в коде к `bcmath` с `scale=2` и согласовать с банком единый момент фиксации курса (`created_at` vs `settlement_at`).
+5. После правки запустить повторный прогон сверки:
+
+```bash
+docker exec recon-service php artisan recon:run --date=2026-06-23 --force
+```
+
+Источник: RB-07 — Расхождение сверки — сумма в БД не совпадает с банковским реестром</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q23" data-verdict="correct">
+  <h2>q23 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Контейнер vLLM упал, в логах CUDA out of memory. Какой временный обход?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-09: перезапустить vLLM с уменьшенными параметрами — --max-model-len 4096 и --gpu-memory-utilization 0.80 (это ограничивает контекст ассистента); затем проверить /health vLLM и фасада; постоянный фикс — зафиксировать параметры в docker-compose.yml.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Подходит RB-09 («vLLM OOM — контейнер упал из-за нехватки VRAM»). Раздел «Решение» целиком:
+
+**Шаг 1 (временный workaround).** Перезапустить контейнер с уменьшенными параметрами:
+
+```bash
+docker stop vllm &amp;&amp; docker rm vllm
+
+docker run -d --name vllm --gpus all --ipc=host \
+  -p 8000:8000 \
+  vllm/vllm-openai:latest \
+  --model Qwen/Qwen2.5-7B-Instruct-AWQ \
+  --max-model-len 4096 \
+  --gpu-memory-utilization 0.80 \
+  --dtype auto
+```
+
+Снижение `--max-model-len` до 4096 ограничивает контекст ассистента. Для runbook-запросов этого достаточно, но длинные диалоги будут обрезаны.
+
+**Шаг 2.** Убедиться, что фасад и RAG снова здоровы:
+
+```bash
+curl -s http://localhost:8000/health
+curl -s http://localhost:8080/health
+```
+
+**Шаг 3 (постоянный фикс).** Зафиксировать параметры в `docker-compose.yml` и закоммитить в GitLab. Провести MR-ревью перед мержем в main.
+
+**Шаг 4.** Убедиться по Grafana, что VRAM держится ниже 7000 MiB в устойчивом состоянии.
+
+**По эскалации (из того же runbook&#x27;а):**
+- L1 самостоятельно не перезапускает, а передаёт информацию L2 при первом подтверждении OOM в логах.
+- L2 применяет временный workaround и создаёт тикет в Яндекс Трекере с меткой `ai-infra`, прикладывая вывод `docker logs`, скриншот Grafana (VRAM) и параметры `docker inspect`.
+- L3 (дежурный DevOps) вызывается, если workaround не помог или VRAM-утечка продолжается после рестарта.
+
+Дополнительно: пока ассистент недоступен, в RB-11 предусмотрен обходной путь для операторов — статичный HTML-зеркальный индекс runbook-ов (`/runbooks/static`), о чём нужно сообщить L1 через служебный чат.
+
+Источник: RB-09 — vLLM OOM — контейнер упал из-за нехватки VRAM</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q26" data-verdict="correct">
+  <h2>q26 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Какие метрики vLLM смотреть, если подозреваю переполнение KV-кэша?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-10: vllm:gpu_cache_usage_perc (близко к 100 %), vllm:num_preemptions_total (растёт), vllm:num_requests_waiting (очередь не рассасывается), p95 e2e latency по vllm:e2e_request_latency_seconds_bucket.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>## Метрики vLLM при подозрении на переполнение KV-кэша (RB-10)
+
+Смотрите панель Grafana `AI Assistant / Inference`:
+
+- `histogram_quantile(0.95, sum by (le) (rate(vllm:e2e_request_latency_seconds_bucket[5m])))`: p95 растёт выше 8 с.
+- `vllm:gpu_cache_usage_perc`: приближается к 100 %.
+- `vllm:num_preemptions_total`: счётчик ненулевой и растёт.
+- `vllm:num_requests_waiting`: очередь ожидающих запросов не рассасывается.
+
+Подтвердить можно и по логам vLLM:
+
+```bash
+docker logs vllm --since 15m 2&gt;&amp;1 | grep -E &quot;preempt|cache|queue|OOM&quot;
+```
+
+Ожидаемая строка: `Running: 12 reqs, Swapped: 3 reqs, Pending: 8 reqs, GPU KV cache usage: 97.4%`
+
+## Решение из runbook&#x27;а
+
+**Шаг 1. Снизить concurrency (временный workaround).** Ограничить параллельные запросы к фасаду через Nginx upstream:
+
+```nginx
+# /etc/nginx/conf.d/facade.conf — временно
+upstream facade {
+    server 127.0.0.1:8001;
+    keepalive 4;  # было 16
+}
+```
+```bash
+nginx -t &amp;&amp; nginx -s reload
+```
+
+**Шаг 2. Перезапустить vLLM с уменьшенным `max-num-seqs`.** vLLM читает параметры concurrency и памяти из CLI-флагов entrypoint (`vllm serve`), а не из переменных окружения. Передавайте их как аргументы, иначе фикс не применится:
+
+```bash
+docker stop vllm
+docker run -d --name vllm --gpus all \
+  -p 8000:8000 \
+  vllm-image:latest \
+  --model /models/Qwen2.5-7B-AWQ --quantization awq \
+  --max-num-seqs 4 \            # было 16
+  --gpu-memory-utilization 0.88
+```
+
+После старта убедиться, что сервис отвечает: `curl -s http://localhost:8000/health | jq .`
+
+**Шаг 3. Проверить восстановление метрик.** В Grafana p95 должна опуститься ниже 4 с в течение 3–5 минут.
+
+**Шаг 4 (постфактум).** Настроить `--max-model-len` под реальный рабочий контекст. Если запросы содержат длинный RAG-контекст, обрезать чанки до 512 токенов в pipeline bge-m3. Зафиксировать значения в Ansible-роли `roles/vllm/defaults/main.yml`.
+
+Источник: RB-10 — Высокая latency p95 ассистента: переполнение KV-cache и preemption</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q31" data-verdict="correct">
+  <h2>q31 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">host.docker.internal не резолвится, а docker-compose поправить пока нельзя. Какой временный обход?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-12: узнать IP хоста WSL2 (ip route show default | awk &#x27;{print $3}&#x27;), подставить его вместо host.docker.internal в prometheus.yml и перезапустить Prometheus; IP меняется при каждом рестарте WSL2.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Подходит RB-12 («Prometheus scrape DOWN — host.docker.internal не резолвится после рестарта WSL»). Временный обход — Шаг 1 из раздела «Решение», он не требует правки `docker-compose.yml`.
+
+**Шаг 1 (временный workaround).** Узнать IP-адрес хоста WSL2 и подставить его напрямую:
+
+```bash
+# В WSL2
+ip route show default | awk &#x27;{print $3}&#x27;
+# Пример вывода: 172.17.112.1
+```
+
+Затем временно заменить `host.docker.internal` на полученный IP в `prometheus.yml` (для job `vllm` и `node`, где указаны `host.docker.internal:8000` и `host.docker.internal:9100`) и перезапустить Prometheus:
+
+```bash
+docker compose restart prometheus
+```
+
+Важно: IP меняется при каждом рестарте WSL2, поэтому после очередного рестарта обход придётся повторить.
+
+**Проверка результата** (Шаги 3–4 из «Решения»):
+
+```bash
+curl -s http://localhost:9090/api/v1/targets | jq &#x27;.data.activeTargets[] | select(.health==&quot;up&quot;) | .labels.job&#x27;
+```
+
+После этого в Grafana дашборды `AI Assistant Overview` и `Node Exporter` должны показывать данные.
+
+**Постоянное решение** (Шаг 2) — добавить `extra_hosts: &quot;host.docker.internal:host-gateway&quot;` для сервиса Prometheus в `docker-compose.yml` и выполнить `docker compose up -d --force-recreate prometheus`. Пока править compose нельзя, это придётся отложить.
+
+**Эскалация:** если обход не убрал DOWN за 30 минут, нужно привлекать L3 (дежурного DevOps).
+
+Источник: RB-12 — Prometheus scrape DOWN — host.docker.internal не резолвится после рестарта WSL</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q32" data-verdict="correct">
+  <h2>q32 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">В Grafana Explore нет свежих логов фасада, хотя Promtail вроде запущен. Что проверить и как починить?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-13: логи самого promtail (ошибка чтения positions-файла), готовность Loki (curl :3100/ready) и место на диске; содержимое /tmp/positions.yaml; самый частый фикс — остановить promtail, удалить битый positions-файл и запустить заново; при нехватке диска — retention или расширение тома.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Во фрагментах это RB-13 (Loki не принимает логи / отставание Promtail). Контейнер Promtail может работать, а файл positions при этом зависает.
+
+## Что проверить (диагностика)
+
+1. Статус Promtail и его логи:
+```bash
+docker ps --filter name=promtail
+docker logs promtail --tail=100 2&gt;&amp;1 | grep -E &quot;error|warn|lag|positions&quot;
+```
+Типичная ошибка:
+```
+level=error msg=&quot;error reading positions file&quot; path=/tmp/positions.yaml err=&quot;unexpected EOF&quot;
+```
+
+2. Готовность Loki и место на диске:
+```bash
+curl -s http://localhost:3100/ready
+df -h /var/lib/docker/volumes/loki_data
+```
+Ответ `/ready` должен быть `ready`. Если диск заполнен больше чем на 85%, это повод для тревоги.
+
+3. Файл positions. Ищите одинаковые или устаревшие смещения в нескольких циклах опроса:
+```bash
+docker exec promtail cat /tmp/positions.yaml
+```
+
+4. Лаг в Grafana:
+   - Дашборд **Loki / Chunks**, панель `Ingester: Log Entries Received Rate`.
+   - Проверочный запрос LogQL:
+   ```logql
+   {job=&quot;facade&quot;} |= &quot;error&quot; | json | line_format &quot;{{.ts}} {{.msg}}&quot;
+   ```
+   - Метрики: если `promtail_read_bytes_total` стоит ровной линией, а `promtail_file_bytes_total` растёт, то смещение чтения (positions) застряло. Растущий разрыв означает, что Promtail отстаёт.
+
+5. WAL и flusher чанков в Loki:
+```bash
+docker logs loki --tail=200 2&gt;&amp;1 | grep -E &quot;chunk|flush|pressure|OOO&quot;
+```
+
+6. Связанные записи в PostgreSQL:
+```sql
+SELECT created_at, service, message
+FROM incident_log
+WHERE created_at &gt; NOW() - INTERVAL &#x27;1 hour&#x27;
+  AND service = &#x27;loki&#x27;
+ORDER BY created_at DESC
+LIMIT 20;
+```
+
+## Как чинить
+
+**Fix A. Повреждённый файл positions (самая частая причина):**
+```bash
+docker stop promtail
+docker exec promtail rm /tmp/positions.yaml
+docker start promtail
+docker logs -f promtail
+```
+Последняя команда нужна, чтобы убедиться, что повторное чтение логов началось. Файл positions находится внутри контейнера Promtail, либо путь берётся из конфига. Порядок команд приведён как в runbook&#x27;е. Если `docker exec` на остановленном контейнере не сработает, альтернативы в runbook&#x27;е нет, эскалируйте к L2.
+
+Временная мера: `docker restart promtail` сбрасывает лаг в памяти, но не лечит повреждённый файл. Используйте её только как первичную стабилизацию на время диагностики.
+
+**Fix B. Нехватка места в Loki:**
+
+Основное решение: расширить том или ужесточить retention, затем передеплоить. Для этого задайте `limits_config.retention_period` и `compactor.retention_enabled=true` в конфиге Loki.
+```bash
+docker compose up -d loki
+```
+Точечное удаление возможно, только если включён retention в compactor. Используйте POST. Удаление выполняется после `delete_request_cancel_period` (по умолчанию 24 ч), поэтому место освободится не сразу.
+```bash
+curl -s -X POST \
+  &#x27;http://localhost:3100/loki/api/v1/delete?query={job=&quot;test&quot;}&amp;start=1970-01-01T00:00:00Z&amp;end=2020-01-01T00:00:00Z&#x27;
+```
+
+**Fix C. OOM или crash loop у Loki:**
+```bash
+docker stats loki
+```
+Если контейнер перезапускается, увеличьте `mem_limit` в compose и передеплойте.
+
+**Проверка после любого фикса.** Нужен именно range-эндпоинт, а не instant `/query`:
+```bash
+curl -s -G &#x27;http://localhost:3100/loki/api/v1/query_range&#x27; \
+  --data-urlencode &#x27;query={job=&quot;facade&quot;}&#x27; \
+  --data-urlencode &quot;start=$(date -d &#x27;5 minutes ago&#x27; +%s)000000000&quot; \
+  --data-urlencode &#x27;limit=5&#x27; | jq &#x27;.data.result[].values[0]&#x27;
+```
+
+## Эскалация
+- **L1:** подтвердить симптом (в Explore `{job=&quot;facade&quot;}` пуст) и выполнить `docker restart promtail`. Если логи вернулись в течение 5 минут, зафиксировать в Yandex Tracker. Иначе передать L2 скриншот Grafana, последние 200 строк `docker logs promtail` и вывод `df -h`.
+- **L2:** выполнить диагностику (шаги 1–6), применить Fix A или B и проверить, что скорость приёма восстановилась. Если Loki в crash loop или очистки диска недостаточно, эскалировать к L3. Приложить содержимое positions, логи Loki, отчёт по диску и вывод SQL из `incident_log`.
+- **L3 (дежурный DevOps):** подключается, если нужно расширить диск (resize тома в Yandex Cloud через Ansible) или есть подозрение на повреждение данных Loki (перестроение индекса чанков). Приложить полный `docker inspect` для loki и promtail, compose-файл и снапшот Prometheus:
+```bash
+curl -XPOST http://localhost:9090/api/v1/admin/tsdb/snapshot
+```
+Для снапшота Prometheus должен быть запущен с `--web.enable-admin-api`.
+
+Если лаг превышает 30 минут, под угрозой SLA по времени решения инцидентов.
+
+Источник: RB-13 — Loki Not Ingesting Logs / Promtail Lag</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q33" data-verdict="correct">
+  <h2>q33 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">По каким метрикам понять, что Promtail отстаёт от чтения файлов логов?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-13: promtail_read_bytes_total стоит на месте, а promtail_file_bytes_total продолжает расти — растущий разрыв значит, что Promtail не успевает читать.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Согласно RB-13 (раздел «Диагностика», шаг 4), отставание Promtail видно по двум метрикам:
+
+- `promtail_file_bytes_total` — размер файла логов (продолжает расти);
+- `promtail_read_bytes_total` — сколько байт Promtail уже прочитал (позиция чтения).
+
+**Как интерпретировать:**
+- Если `promtail_read_bytes_total` выглядит как плоская линия, а `promtail_file_bytes_total` продолжает расти, значит смещение чтения (positions) застряло.
+- Растущий разрыв между этими двумя метриками означает, что Promtail отстаёт.
+
+**Дополнительные признаки из того же runbook&#x27;а:**
+- на дашборде **Loki / Chunks** панель `Ingester: Log Entries Received Rate` показывает падение или отсутствие поступления записей;
+- в файле positions одинаковые (застывшие) смещения на протяжении нескольких циклов скрапинга: `docker exec promtail cat /tmp/positions.yaml`;
+- срабатывает алерт **LokiIngestionLag &gt; 5m**.
+
+Источник: RB-13 — Loki Not Ingesting Logs / Promtail Lag</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<p><button id="copy">Скопировать итог</button></p><textarea id="out" readonly></textarea>
+</main><script>
+const res = {};
+function upd(){
+  const ids=[...document.querySelectorAll('.card')].map(c=>c.dataset.id);
+  const done=ids.filter(i=>res[i]); const agree=done.filter(i=>res[i]==='agree').length;
+  document.getElementById('out').value='Ручная проверка: согласен '+agree+'/'+done.length+' ('+ids.length+' в листе). '+
+    done.map(i=>i+'='+(res[i]==='agree'?'да':'нет')).join(', ');
+}
+document.querySelectorAll('.card').forEach(c=>c.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  res[c.dataset.id]=b.dataset.a; c.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); upd();}));
+document.getElementById('copy').onclick=()=>{const t=document.getElementById('out');t.select();navigator.clipboard&&navigator.clipboard.writeText(t.value);};
+upd();
+</script></body></html>

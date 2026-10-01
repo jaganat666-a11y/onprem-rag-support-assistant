@@ -1,0 +1,38 @@
+# secrets / local env
+.env
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# RAG embedding cache (regenerated from corpus, content-hash invalidated)
+*.npy
+embeds.npy
+.cache/
+rag/_index_cache/
+
+# model weights / HF cache — never commit, pulled on demand
+models/
+*.gguf
+*.safetensors
+hf-cache/
+vllm-hf-cache/
+
+# logs
+*.log
+logs/
+
+# docker volume data, if ever bind-mounted locally
+data/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Windows: stray file created when a shell redirects output to the NUL device
+nul

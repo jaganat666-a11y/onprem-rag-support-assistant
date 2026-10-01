@@ -1,0 +1,47 @@
+# Promtail — агент сбора логов: читает stdout контейнеров через Docker API и
+# пушит в Loki. Собираем намеренно ТОЛЬКО фасад (job="facade") — именно его логи
+# нужны дежурному (RB-09/RB-11/RB-13 запрашивают {job="facade"}). Фильтрация — на
+# уровне Docker API (filters по имени контейнера), а не relabel-keep: в docker_sd
+# Promtail relabel-keep не отсекает таргеты надёжно, поэтому ограничиваем выборку
+# контейнеров в источнике. Добавить другие сервисы = расширить filters.
+server:
+  http_listen_port: 9080        # /metrics и /ready самого Promtail
+  log_level: info
+
+positions:
+  # докуда дочитан каждый лог-источник; при повреждении файла — лаг ингестии (RB-13, Fix A)
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push   # push в Loki по имени сервиса в compose-сети
+
+scrape_configs:
+  - job_name: facade
+    docker_sd_configs:
+      # Docker service discovery, ограниченный фильтром Docker API: тейлим только
+      # контейнер facade (filter name). Остальные контейнеры даже не открываются.
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 10s
+        filters:
+          - name: name
+            values: ["facade"]
+    relabel_configs:
+      # фиксированная метка job — её спрашивают LogQL во всех runbook'ах
+      - target_label: job
+        replacement: facade
+      # имя контейнера в отдельную метку (в Docker идёт с ведущим '/', срезаем его)
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: container
+    pipeline_stages:
+      # строки фасада — единый JSON {ts,level,logger,msg,...}. Вынимаем level в
+      # метку (низкая кардинальность) и берём время из самого лога, а не из приёма.
+      - json:
+          expressions:
+            level: level
+            ts: ts
+      - labels:
+          level:
+      - timestamp:
+          source: ts
+          format: RFC3339

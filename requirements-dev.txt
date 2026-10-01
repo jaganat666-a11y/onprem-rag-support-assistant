@@ -1,0 +1,9 @@
+# Тесты и линт (CI): фасад без GPU, без моделей и без БД — эмбеддер, реранкер
+# и vLLM в тестах подменяются заглушками, поэтому torch и sentence-transformers
+# не нужны. Версии библиотек фасада — как в facade/requirements.txt.
+fastapi==0.142.2
+numpy==2.4.6
+psycopg2-binary==2.9.13
+httpx==0.28.1
+pytest==9.1.1
+ruff==0.16.9

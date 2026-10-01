@@ -1,0 +1,292 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Ручная проверка судьи</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--mute:#5d6470;--line:#dde1e7;--ok:#1f7a4d;--mid:#a86b00;--bad:#b3261e;--sel:#e8f0fe}
+@media (prefers-color-scheme:dark){:root{--bg:#15171b;--card:#1e2126;--ink:#e6e8eb;--mute:#9aa1ac;--line:#30343b;--sel:#233044}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+main{max-width:880px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px} .q{font-weight:600}
+pre{white-space:pre-wrap;font:13px/1.45 ui-monospace,Consolas,monospace;background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto}
+.v.correct{color:var(--ok)} .v.partial{color:var(--mid)} .v.incorrect{color:var(--bad)} .c{color:var(--mute)}
+.btns button{margin-right:8px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.btns button.on{background:var(--sel);border-color:#6b8fd6}
+#out{width:100%;min-height:70px;font:13px ui-monospace,monospace}
+</style></head><body><main>
+<h1>Ручная проверка судьи — 10 ответов</h1>
+<p>Прочитай эталон и ответ, нажми «согласен» или «не согласен» с вердиктом судьи. Внизу — строка итога: скопируй её в чат.</p>
+
+<section class="card" data-id="o05" data-verdict="correct">
+  <h2>o05 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Растёт consumer lag в Kafka на топике payments. Как разобраться?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет (Kafka в корпусе не упоминается): правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Уверенного ответа в runbook&#x27;ах нет.
+Ближе всего по поиску — проверьте, подходит ли:
+- RB-13 — Loki Not Ingesting Logs / Promtail Lag
+- RB-04 — Двойное списание по карте (double charge)
+- RB-10 — Высокая latency p95 ассистента: переполнение KV-cache и preemption
+Вопрос передан дежурному инженеру.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o09" data-verdict="correct">
+  <h2>o09 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как включить сотрудникам двухфакторную аутентификацию для входа в админку?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Уверенного ответа в runbook&#x27;ах нет.
+Ближе всего по поиску — проверьте, подходит ли:
+- RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера
+- RB-04 — Двойное списание по карте (double charge)
+- RB-03 — Автоконвертация RUB→USD: провайдер курса недоступен, платёж завис
+Вопрос передан дежурному инженеру.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q01" data-verdict="partial">
+  <h2>q01 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Клиент пишет: пополнил по СБП, банк деньги списал, а баланс карты не изменился. Как проверить, дошёл ли до нас платёжный вебхук?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-01: проверить в логах Nginx, был ли POST /api/webhooks/payment; найти события по txn_id в логах webhook-handler (Loki) и в таблице webhook_events: нет строки — вебхук не дошёл, две строки с одним event_id — дубль; посмотреть панель Payments / Webhook Health.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>1. Проверить, дошёл ли вебхук до Nginx:
+```bash
+docker logs nginx --since 10m 2&gt;&amp;1 | grep &quot;POST /api/webhooks/payment&quot;
+```
+Ожидаемая строка:
+```
+10.0.0.5 - - [23/Jun/2026:14:31:02 +0000] &quot;POST /api/webhooks/payment HTTP/1.1&quot; 200 42
+```
+
+Источник: RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера</pre></details>
+  <p class="c">Комментарий судьи: Указан только шаг с Nginx, пропущены проверка логов webhook-handler и таблицы webhook_events.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q06" data-verdict="incorrect">
+  <h2>q06 · <span class="v incorrect">судья: неверно</span></h2>
+  <p class="q">Банк ответил, что списания по этой операции СБП не было. Нужно ли оформлять клиенту возврат?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-02: нет. Если списания не было, транзакцию переводят в FAILED без возврата — возвращать нечего, возврат несписанной суммы создаст недостачу. Возврат (sbp:refund) нужен, только когда списание было, но довести зачисление невозможно.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Да, нужно оформлять возврат клиенту. В соответствии с описанным в runbook&#x27;е процессом, если банк сообщает, что списания не было (операция не прошла), то транзакция должна быть переведена в состояние `FAILED` без возврата. Возврат несписанной суммы может создать недостачу. Поэтому правильный шаг — инициировать возврат через команду:
+
+```bash
+docker exec laravel-app php artisan sbp:refund --txn=tx_8f3ac1
+```
+⚠️ Этих строк нет в runbook&#x27;ах — не выполнять без проверки:
+- `docker exec laravel-app php artisan sbp:refund --txn=tx_8f3ac1`
+
+Источник: RB-02 — СБП-пополнение зависло в PENDING: таймаут колбэка, ручная сверка и доведение</pre></details>
+  <p class="c">Комментарий судьи: Ответ «да, оформлять возврат» противоречит корпусу: если списания не было, транзакция переводится в FAILED без возврата.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q25" data-verdict="correct">
+  <h2>q25 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">p95 ответов ассистента выросла до 15 секунд, в логах vLLM preemption. Что делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-10: временно снизить конкурентность запросов к фасаду (keepalive в upstream Nginx); перезапустить vLLM с меньшим --max-num-seqs (4 вместо 16) — флагом CLI, не переменной окружения; проверить, что p95 опустилась ниже 4 с; постфактум подобрать --max-model-len и длину RAG-чанков.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>### Шаг 1. Снизить concurrency (временный workaround).
+Ограничить параллельные запросы к фасаду через Nginx upstream:
+```nginx
+# /etc/nginx/conf.d/facade.conf — временно
+upstream facade {
+    server 127.0.0.1:8001;
+    keepalive 4;  # было 16
+}
+```
+```bash
+nginx -t &amp;&amp; nginx -s reload
+```
+
+### Шаг 2. Перезапустить vLLM с уменьшенным `max-num-seqs`.
+Параметры concurrency и памяти vLLM читает из CLI-флагов entrypoint (`vllm serve`), а НЕ из переменных окружения — передаём их как аргументы, иначе фикс не применится:
+```bash
+docker stop vllm
+docker run -d --name vllm --gpus all \
+  -p 8000:8000 \
+  vllm-image:latest \
+  --model /models/Qwen2.5-7B-AWQ --quantization awq \
+  --max-num-seqs 4 \            # было 16
+  --gpu-memory-utilization 0.88
+```
+После старта убедиться: `curl -s http://localhost:8000/health | jq .`
+
+### Шаг 3. Проверить восстановление метрик — в Grafana p95 должна опуститься ниже 4 с в течение 3–5 мин.
+
+### Шаг 4 (постфактум). Настроить `--max-model-len` под реальный рабочий контекст (если запросы содержат длинный RAG-контекст — обрезать чанки до 512 токенов в pipeline bge-m3). Зафиксировать значения в Ansible-роли `roles/vllm/defaults/main.yml`.
+
+Источник: RB-10 — Высокая latency p95 ассистента: переполнение KV-cache и preemption</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q31" data-verdict="correct">
+  <h2>q31 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">host.docker.internal не резолвится, а docker-compose поправить пока нельзя. Какой временный обход?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-12: узнать IP хоста WSL2 (ip route show default | awk &#x27;{print $3}&#x27;), подставить его вместо host.docker.internal в prometheus.yml и перезапустить Prometheus; IP меняется при каждом рестарте WSL2.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для временного обхода проблемы, когда `host.docker.internal` не резолвится, можно использовать следующий шаг:
+
+**Шаг 1 (временный workaround).** Узнать IP-адрес хоста WSL2 и подставить его напрямую:
+```bash
+# В WSL2
+ip route show default | awk &#x27;{print $3}&#x27;
+# Пример вывода: 172.17.112.1
+```
+Временно заменить `host.docker.internal` на полученный IP в `prometheus.yml` и перезапустить Prometheus:
+```bash
+docker compose restart prometheus
+```
+&gt; **Временный фикс.** IP меняется при каждом рестарте WSL2.
+
+Источник: RB-12 — Prometheus scrape DOWN — host.docker.internal не резолвится после рестарта WSL</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q37" data-verdict="correct">
+  <h2>q37 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как настроить ротацию docker-логов, чтобы диск больше не забивался?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-15: в docker-compose.yml задать logging: driver json-file с options max-size: &quot;50m&quot; и max-file: &quot;5&quot;; раскатать через Ansible (playbooks/docker_log_rotation.yml).</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для настройки ротации docker-логов и предотвращения переполнения диска необходимо выполнить следующие шаги:
+
+1. Открыть файл `docker-compose.yml` для редактирования.
+2. В секции `logging` добавить параметры для ограничения размера и количества файлов логов:
+```yaml
+logging:
+  driver: &quot;json-file&quot;
+  options:
+    max-size: &quot;50m&quot;
+    max-file: &quot;5&quot;
+```
+3. Сохранить изменения в файле `docker-compose.yml`.
+4. Применить изменения через Ansible:
+```bash
+ansible-playbook -i inventory/prod playbooks/docker_log_rotation.yml
+```
+
+Эти шаги помогут автоматически управлять размером и количеством файлов логов, предотвращая переполнение диска.
+
+Источник: RB-15 — Диск заполнен на ноде — контейнеры в CrashLoop</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q38" data-verdict="partial">
+  <h2>q38 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Сборка в GitHub Actions упала: composer пишет, что нужен php ^8.1, а в образе 8.0. Как починить?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-16: обновить базовый образ в Dockerfile: FROM php:8.0-fpm-alpine -&gt; FROM php:8.1-fpm-alpine, закоммитить и убедиться, что пайплайн зелёный; воспроизвести локально через docker build --no-cache.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>**Case A: PHP version mismatch in Dockerfile.**
+
+Update `FROM` to match the platform requirement:
+
+```dockerfile
+- FROM php:8.0-fpm-alpine
++ FROM php:8.1-fpm-alpine
+```
+
+Commit, push, verify pipeline goes green.
+
+Источник: RB-16 — GitHub Actions pipeline fails: docker build or lint step red on push</pre></details>
+  <p class="c">Комментарий судьи: Решение верное, но ответ написан английскими фразами, а не по-русски.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q39" data-verdict="partial">
+  <h2>q39 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">A user paid via SBP, the money left their bank account, but the transaction has been stuck in PENDING for 20 minutes. What should the on-call engineer do?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-02: проверить laravel-worker и логи колбэка; взять sbp_operation_id из meta транзакции; запросить сверку у банка-партнёра; если списание подтверждено и card_credited_at IS NULL — довести вручную: php artisan sbp:finalize-transaction --txn=&lt;txn_id&gt; --force.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>На основе предоставленных runbook&#x27;ов, на-call инженер должен выполнить следующие шаги:
+
+1. **Проверить статус воркера очереди:**
+```bash
+docker ps --filter name=laravel-worker
+docker logs --tail=100 laravel-worker 2&gt;&amp;1 | grep -E &quot;sbp|callback|tx_8f3ac1&quot;
+```
+
+2. **LogQL в Grafana / Loki:**
+```logql
+{job=&quot;laravel-worker&quot;} |= &quot;sbp&quot; |= &quot;PENDING&quot; | json | line_format &quot;{{.message}}&quot;
+{job=&quot;sbp-callback&quot;} |= &quot;callback&quot; |= &quot;error&quot;
+```
+
+3. **Метрика в Grafana:**
+Панель `SBP / Callback Success Rate` → дашборд `Payments Overview`.
+Метрика: `rate(sbp_callback_received_total[5m])` — если близка к нулю при ненулевом `sbp_payment_initiated_total`, колбэки не доходят.
+
+4. **SQL-запрос состояния транзакции:**
+```sql
+SELECT id, user_id, status, amount_rub, created_at, updated_at, meta-&gt;&gt;&#x27;sbp_operation_id&#x27; AS sbp_op
+FROM transactions
+WHERE id = &#x27;tx_8f3ac1&#x27;;
+```
+
+5. **Проверить доступность эндпоинта колбэка СБП:**
+```bash
+curl -v -o /dev/null -s -w &quot;%{http_code}&quot; https://api.internal/sbp/callback/health
+ss -tlnp | grep :443
+```
+
+6. **Получить `sbp_operation_id`** из поля `meta` транзакции (см. SQL выше).
+
+7. **Запросить сверку у банка-партнёра** через внутренний API или вручную через ЛК банка; подтвердить статус операции по `sbp_operation_id`.
+
+8. **Вручную запустить доведение** (временный workaround):
+```bash
+docker exec laravel-app php artisan sbp:finalize-transaction --txn=tx_8f3ac1 --force
+```
+
+9. **Убедиться, что автоконвертация и зачисление прошли:**
+```sql
+SELECT status, card_credited_at, converted_amount_usd FROM transactions WHERE id = &#x27;tx_8f3ac1&#x27;;
+```
+
+10. **После стабилизации — зафиксировать инцидент в Яндекс Трекере и проверить очередь на наличие других зависших `PENDING`.**
+
+Если транзакция не может быть доведена, необходимо перевести её в `FAILED` и инициировать возврат через `php artisan sbp:refund --txn=tx_8f3ac1` или перевести в `FAILED` без возврата, в зависимости от ответа банка.
+
+Источник: RB-02 — СБП-пополнение зависло в PENDING: таймаут колбэка, ручная сверка и доведение</pre></details>
+  <p class="c">Комментарий судьи: Нет обязательной проверки card_credited_at IS NULL перед finalize, команда подана после запроса к банку без условия.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q40" data-verdict="correct">
+  <h2>q40 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">How do I find which PostgreSQL query is blocking the others and release the lock?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-14: запрос к pg_locks с джойном к pg_stat_activity (заблокированный NOT granted, блокирующий granted) даёт blocking_pid; временный workaround — SELECT pg_terminate_backend(&lt;blocking_pid&gt;).</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Чтобы найти блокирующий запрос и освободить его, нужно выполнить следующие шаги:
+
+1. Найти цепочку блокировок:
+```sql
+SELECT blocked.pid AS blocked_pid, blocked_act.query AS blocked_query,
+       blocking.pid AS blocking_pid, blocking_act.query AS blocking_query
+FROM pg_locks blocked
+JOIN pg_stat_activity blocked_act   ON blocked_act.pid = blocked.pid
+JOIN pg_locks blocking ON blocking.locktype = blocked.locktype
+  AND blocking.database     IS NOT DISTINCT FROM blocked.database
+  AND blocking.relation     IS NOT DISTINCT FROM blocked.relation
+  AND blocking.page         IS NOT DISTINCT FROM blocked.page
+  AND blocking.tuple        IS NOT DISTINCT FROM blocked.tuple
+  AND blocking.virtualxid   IS NOT DISTINCT FROM blocked.virtualxid
+  AND blocking.transactionid IS NOT DISTINCT FROM blocked.transactionid
+  AND blocking.classid      IS NOT DISTINCT FROM blocked.classid
+  AND blocking.objid        IS NOT DISTINCT FROM blocked.objid
+  AND blocking.objsubid     IS NOT DISTINCT FROM blocked.objsubid
+  AND blocking.pid != blocked.pid
+JOIN pg_stat_activity blocking_act  ON blocking_act.pid = blocking.pid
+WHERE NOT blocked.granted AND blocking.granted;
+```
+
+2. Завершить блокирующий процесс:
+```sql
+SELECT pg_terminate_backend(&lt;blocking_pid&gt;);
+```
+
+Замените `&lt;blocking_pid&gt;` на PID блокирующего процесса, который был найден на первом шаге.
+
+Источник: RB-14 — PostgreSQL — исчерпан пул соединений, блокировки от long-running запроса</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<p><button id="copy">Скопировать итог</button></p><textarea id="out" readonly></textarea>
+</main><script>
+const res = {};
+function upd(){
+  const ids=[...document.querySelectorAll('.card')].map(c=>c.dataset.id);
+  const done=ids.filter(i=>res[i]); const agree=done.filter(i=>res[i]==='agree').length;
+  document.getElementById('out').value='Ручная проверка: согласен '+agree+'/'+done.length+' ('+ids.length+' в листе). '+
+    done.map(i=>i+'='+(res[i]==='agree'?'да':'нет')).join(', ');
+}
+document.querySelectorAll('.card').forEach(c=>c.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  res[c.dataset.id]=b.dataset.a; c.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); upd();}));
+document.getElementById('copy').onclick=()=>{const t=document.getElementById('out');t.select();navigator.clipboard&&navigator.clipboard.writeText(t.value);};
+upd();
+</script></body></html>

@@ -1,0 +1,274 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Ручная проверка судьи</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#1c1f24;--mute:#5d6470;--line:#dde1e7;--ok:#1f7a4d;--mid:#a86b00;--bad:#b3261e;--sel:#e8f0fe}
+@media (prefers-color-scheme:dark){:root{--bg:#15171b;--card:#1e2126;--ink:#e6e8eb;--mute:#9aa1ac;--line:#30343b;--sel:#233044}}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,sans-serif}
+main{max-width:880px;margin:0 auto;padding:16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:14px 0}
+h1{font-size:20px} h2{font-size:16px;margin:0 0 6px} .q{font-weight:600}
+pre{white-space:pre-wrap;font:13px/1.45 ui-monospace,Consolas,monospace;background:var(--bg);padding:10px;border-radius:6px;overflow-x:auto}
+.v.correct{color:var(--ok)} .v.partial{color:var(--mid)} .v.incorrect{color:var(--bad)} .c{color:var(--mute)}
+.btns button{margin-right:8px;padding:6px 12px;border:1px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.btns button.on{background:var(--sel);border-color:#6b8fd6}
+#out{width:100%;min-height:70px;font:13px ui-monospace,monospace}
+</style></head><body><main>
+<h1>Ручная проверка судьи — 10 ответов</h1>
+<p>Прочитай эталон и ответ, нажми «согласен» или «не согласен» с вердиктом судьи. Внизу — строка итога: скопируй её в чат.</p>
+
+<section class="card" data-id="o05" data-verdict="incorrect">
+  <h2>o05 · <span class="v incorrect">судья: неверно</span></h2>
+  <p class="q">Растёт consumer lag в Kafka на топике payments. Как разобраться?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет (Kafka в корпусе не упоминается): правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В runbook&#x27;ах для разбора роста consumer lag в Kafka на топике payments нет прямого описания действий. Однако можно предложить следующие шаги, основанные на аналогичных процедурах из других runbook&#x27;ов:
+
+1. **Проверить состояние и логи Kafka consumers:**
+   ```bash
+   docker ps --filter name=kafka-consumer
+   docker logs kafka-consumer --tail=100 2&gt;&amp;1 | grep -E &quot;error|lag|offset&quot;
+   ```
+
+2. **Проверить метрики consumer lag в Grafana:**
+   - Панель: `Kafka Consumers` → меры `consumer_lag` и `consumer_offset`.
+
+3. **Проверить балансировку потребителей:**
+   ```bash
+   kafkacat -P -b &lt;broker_address&gt; -t payments
+   ```
+
+4. **Проверить состояние Kafka topics:**
+   ```bash
+   kubectl get pods -l app=kafka
+   kubectl logs &lt;kafka_pod_name&gt; --tail=100 2&gt;&amp;1 | grep -E &quot;topic|partition|replica&quot;
+   ```
+
+5. **Проверить логи приложения, которое является consumer:**
+   ```bash
+   docker logs &lt;app_container_name&gt; --tail=100 2&gt;&amp;1 | grep -E &quot;error|lag|offset&quot;
+   ```
+
+6. **Проверить метрики в Prometheus:**
+   ```bash
+   curl -XGET http://&lt;prometheus_url&gt;/api/v1/query_range?query=consumer_lag&amp;start=&lt;timestamp&gt;&amp;end=&lt;timestamp&gt;&amp;step=&lt;step&gt;
+   ```
+
+7. **Проверить состояние и логи Kafka brokers:**
+   ```bash
+   docker ps --filter name=kafka-broker
+   docker logs kafka-broker --tail=100 2&gt;&amp;1 | grep -E &quot;error|lag|offset&quot;
+   ```
+
+Эти шаги помогут определить причину роста consumer lag и предпринять соответствующие меры. Опиранье ведется на основе общих практик и аналогий из других runbook&#x27;ов.</pre></details>
+  <p class="c">Комментарий судьи: После частичного признания отсутствия информации выдал изобретённые команды для Kafka (kafkacat, kubectl, docker ps kafka-consumer), которых нет в корпусе.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o06" data-verdict="correct">
+  <h2>o06 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как настроить потоковую репликацию PostgreSQL на резервную ноду?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать шаги.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В предоставленных фрагментах runbook&#x27;ов нет информации о настройке потоковой репликации PostgreSQL на резервную ноду.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="o10" data-verdict="correct">
+  <h2>o10 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как оплачиваются дежурства в выходные и праздники?</p>
+  <details open><summary>Эталон из набора</summary><p>В runbook&#x27;ах этого нет: правильный ответ — честно сказать об этом и не выдумывать условия.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>В提供的runbook片段中没有关于如何在周末和节假日支付值班费用的信息。因此，无法从这些runbook片段中得出相关结论。
+
+ID引用的runbook：RB-01, RB-04, RB-06, RB-07</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q03" data-verdict="partial">
+  <h2>q03 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Подтвердили, что вебхук от эквайера потерялся. Как вручную довести зачисление и кому это разрешено делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-01: запросить у эквайера повторную отправку события; временный workaround — docker exec payment-service php artisan payment:replay --txn &lt;txn_id&gt;, только L2/L3 и только после проверки, что записи в webhook_events нет.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Вручную довести зачисление можно только через L3 с согласованием финансового контроля. Это указано в шагах эскалации и диагностики в runbook&#x27;е RB-01.
+
+Опиравшись на: RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера · Решение, RB-01 — Платёжный вебхук — потеря или дублирование события от эквайера · Эскалация.</pre></details>
+  <p class="c">Комментарий судьи: Неверный уровень доступа: указано «только L3», тогда как корпус говорит L2/L3; пропущены команда payment:replay и проверка отсутствия записи в webhook_events перед запуском.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q13" data-verdict="partial">
+  <h2>q13 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Клиент оплатил тариф 499 ₽, а виртуальная карта не появляется уже 10 минут. В логах: BIN sponsor timeout after 30s. Что делать?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-05: поставить очередь на паузу (php artisan queue:pause database:card-issuance), проверить доступность BIN-спонсора и открыть инцидент у провайдера; после восстановления — queue:resume и queue:retry all --queue=card-issuance, проверить, что задачи ушли в done; если очередь не рассасывается — manual_review и ручной выпуск карт через админку.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Действуйте согласно следующим шагам из runbook RB-05:
+
+1. Проверьте живость контейнеров:
+```bash
+docker ps --filter &quot;name=card-issuer&quot; --filter &quot;name=queue-worker&quot;
+```
+
+2. Посмотрите хвост логов воркера:
+```bash
+docker logs --tail=100 -f queue-worker 2&gt;&amp;1 | grep -E &quot;timeout|BIN|error&quot;
+```
+
+3. Проверьте длину очереди в PostgreSQL:
+```sql
+SELECT status, COUNT(*) AS cnt, MIN(created_at) AS oldest
+FROM card_issue_jobs
+WHERE status IN (&#x27;pending&#x27;, &#x27;failed&#x27;)
+GROUP BY status;
+```
+
+4. Проверьте доступность BIN-спонсора:
+```bash
+curl -v --max-time 10 https://api.bin-sponsor.example.com/v1/health
+```
+
+5. Если BIN-спонсор недоступен более 15 минут, эскалация к L2.
+
+6. Если очередь застряла, временные меры:
+   - Остановить повторные попытки:
+   ```bash
+   docker exec queue-worker php artisan queue:pause database:card-issuance
+   ```
+   - Вручную перевести `pending`-записи в статус `manual_review` и выпустить карты через admin-панель.
+
+Опираюсь на runbook&#x27;и RB-05 и RB-02.</pre></details>
+  <p class="c">Комментарий судьи: Пропущены команды queue:resume и queue:retry all --queue=card-issuance для фазы восстановления после устранения проблемы BIN-спонсора.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q15" data-verdict="correct">
+  <h2>q15 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">После ротации секрета входящие вебхуки эквайера отбиваются с 401. Как найти сервис, который работает со старым секретом?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-06: сравнить переменную ACQUIRER_WEBHOOK_SECRET в контейнерах webhook-handler и payment-gateway (docker exec &lt;c&gt; env | grep ACQUIRER_WEBHOOK_SECRET); обновить секрет в окружении затронутого сервиса и пересоздать его (docker compose up -d --no-deps webhook-handler), затем переотправить упавшие вебхуки.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Чтобы найти сервис, который работает со старым секретом, можно выполнить следующие шаги:
+
+```bash
+for c in webhook-handler payment-gateway; do
+  echo &quot;=== $c ===&quot;; docker exec $c env | grep ACQUIRER_WEBHOOK_SECRET
+done
+```
+
+Эти команды сравнивают переменные окружения между контейнерами, чтобы выявить тот, который использует старый секрет. Опиранье на [RB-06 — Webhook Signature Mismatch After Secret Rotation · Диагностика](RB-06).</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q26" data-verdict="partial">
+  <h2>q26 · <span class="v partial">судья: частично</span></h2>
+  <p class="q">Какие метрики vLLM смотреть, если подозреваю переполнение KV-кэша?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-10: vllm:gpu_cache_usage_perc (близко к 100 %), vllm:num_preemptions_total (растёт), vllm:num_requests_waiting (очередь не рассасывается), p95 e2e latency по vllm:e2e_request_latency_seconds_bucket.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для проверки переполнения KV-кэша следует обратить внимание на следующие метрики:
+
+- `vllm:gpu_cache_usage_perc`: показывает использование GPU кэша.
+- `vllm:num_preemptions_total`: отслеживает количество предемпций.
+- `vllm:num_requests_waiting`: отображает количество ожидающих запросов.
+
+Эти метрики доступны через панель `AI Assistant / Inference` в Grafana. Опираюсь на runbook [RB-10 — Высокая latency p95 ассистента: переполнение KV-cache и preemption].</pre></details>
+  <p class="c">Комментарий судьи: Пропущена метрика vllm:e2e_request_latency_seconds_bucket (p95), указанная в корпусе как четвёртый ориентир переполнения KV-кэша.</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q35" data-verdict="correct">
+  <h2>q35 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Как найти в PostgreSQL запрос, который блокирует остальные?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-14: запрос к pg_locks с джойном к pg_stat_activity, где заблокированный NOT granted, а блокирующий granted, — выдаёт blocked_pid / blocking_pid и тексты запросов; долгие запросы — по pg_stat_activity с query_start старше 30 секунд.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для того чтобы найти запрос, который блокирует остальные, можно использовать следующий SQL-запрос:
+
+```sql
+SELECT blocked.pid AS blocked_pid, blocked_act.query AS blocked_query,
+       blocking.pid AS blocking_pid, blocking_act.query AS blocking_query
+FROM pg_locks blocked
+JOIN pg_stat_activity blocked_act   ON blocked_act.pid = blocked.pid
+JOIN pg_locks blocking ON blocking.locktype = blocked.locktype
+  AND blocking.database     IS NOT DISTINCT FROM blocked.database
+  AND blocking.relation     IS NOT DISTINCT FROM blocked.relation
+  AND blocking.page         IS NOT DISTINCT FROM blocked.page
+  AND blocking.tuple        IS NOT DISTINCT FROM blocked.tuple
+  AND blocking.virtualxid   IS NOT DISTINCT FROM blocked.virtualxid
+  AND blocking.transactionid IS NOT DISTINCT FROM blocked.transactionid
+  AND blocking.classid      IS NOT DISTINCT FROM blocked.classid
+  AND blocking.objid        IS NOT DISTINCT FROM blocked.objid
+  AND blocking.objsubid     IS NOT DISTINCT FROM blocked.objsubid
+  AND blocking.pid != blocked.pid
+JOIN pg_stat_activity blocking_act  ON blocking_act.pid = blocking.pid
+WHERE NOT blocked.granted AND blocking.granted;
+```
+
+Этот запрос показывает цепочку блокировок, где `blocked_query` — это запрос, который блокирует другие запросы, а `blocking_query` — это запрос, который ждет блокировки.
+
+Опираюсь на runbook с ID [RB-14].</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q36" data-verdict="correct">
+  <h2>q36 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">Диск на ноде забит, контейнеры в CrashLoop, no space left on device. Как быстро освободить место и не потерять данные?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-15: усечь самые тяжёлые docker-логи (truncate -s 0 по LogPath, не удалять), docker system prune -f без --volumes; тома postgres/loki не трогать — docker volume prune только после подтверждения L3 и резервной копии; затем перезапустить контейнеры и настроить ротацию логов.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>Для быстрого освобождения места на диске и сохранения данных можно выполнить следующие шаги:
+
+1. **Усечь docker-логи:**
+```bash
+truncate -s 0 $(docker inspect --format=&#x27;{{.LogPath}}&#x27; vllm_container)
+truncate -s 0 $(docker inspect --format=&#x27;{{.LogPath}}&#x27; loki)
+```
+
+2. **Удалить неиспользуемые docker-объекты:**
+```bash
+docker system prune -f
+```
+
+3. **Настроить ротацию логов:**
+```yaml
+logging:
+  driver: &quot;json-file&quot;
+  options:
+    max-size: &quot;50m&quot;
+    max-file: &quot;5&quot;
+```
+
+4. **Перезапустить контейнеры:**
+```bash
+docker compose up -d --force-recreate
+```
+
+5. **Проверить восстановление:**
+```bash
+curl -s http://localhost:8001/health | jq .
+df -h /
+```
+
+Опираюсь на runbook&#x27;и с ID RB-15 и RB-13.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<section class="card" data-id="q39" data-verdict="correct">
+  <h2>q39 · <span class="v correct">судья: верно</span></h2>
+  <p class="q">A user paid via SBP, the money left their bank account, but the transaction has been stuck in PENDING for 20 minutes. What should the on-call engineer do?</p>
+  <details open><summary>Эталон из набора</summary><p>RB-02: проверить laravel-worker и логи колбэка; взять sbp_operation_id из meta транзакции; запросить сверку у банка-партнёра; если списание подтверждено и card_credited_at IS NULL — довести вручную: php artisan sbp:finalize-transaction --txn=&lt;txn_id&gt; --force.</p></details>
+  <details open><summary>Ответ ассистента</summary><pre>На основе runbook&#x27;ов (RB-02, RB-06):
+
+1. Получить `sbp_operation_id` из поля `meta` транзакции.
+2. Запросить сверку у банка-партнёра через внутренний API или вручную через ЛК банка.
+3. Если банк подтвердил списание и зачисление ещё не выполнено, вручную запустить доведение:
+   ```bash
+   docker exec laravel-app php artisan sbp:finalize-transaction --txn=tx_8f3ac1 --force
+   ```
+4. Проверить состояние транзакции:
+   ```sql
+   SELECT status, card_credited_at, converted_amount_usd FROM transactions WHERE id = &#x27;tx_8f3ac1&#x27;;
+   ```
+
+Если доведение не помогает или затронуто более 5 транзакций, эскалировать инцидент L3.
+
+Действия основаны на RB-02 и RB-06.</pre></details>
+  <p class="c">Комментарий судьи: —</p>
+  <div class="btns"><button data-a="agree">Согласен с судьёй</button><button data-a="disagree">Не согласен</button></div>
+</section>
+<p><button id="copy">Скопировать итог</button></p><textarea id="out" readonly></textarea>
+</main><script>
+const res = {};
+function upd(){
+  const ids=[...document.querySelectorAll('.card')].map(c=>c.dataset.id);
+  const done=ids.filter(i=>res[i]); const agree=done.filter(i=>res[i]==='agree').length;
+  document.getElementById('out').value='Ручная проверка: согласен '+agree+'/'+done.length+' ('+ids.length+' в листе). '+
+    done.map(i=>i+'='+(res[i]==='agree'?'да':'нет')).join(', ');
+}
+document.querySelectorAll('.card').forEach(c=>c.querySelectorAll('button').forEach(b=>b.onclick=()=>{
+  res[c.dataset.id]=b.dataset.a; c.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x===b)); upd();}));
+document.getElementById('copy').onclick=()=>{const t=document.getElementById('out');t.select();navigator.clipboard&&navigator.clipboard.writeText(t.value);};
+upd();
+</script></body></html>

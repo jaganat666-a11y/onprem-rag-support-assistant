@@ -1,0 +1,77 @@
+{
+  "meta": {
+    "started": "2026-10-01T11:53:14",
+    "facade": "http://localhost:8080",
+    "model": {
+      "served_name": "qwen2.5-7b",
+      "weights": "Qwen/Qwen2.5-7B-Instruct-AWQ",
+      "max_model_len": 8192
+    },
+    "retrieval": {
+      "rerank": true,
+      "cand_k": 12,
+      "top_k": 8,
+      "min_score": 0.3,
+      "ctx_runbooks": 2
+    },
+    "questions_file": "questions.jsonl"
+  },
+  "metrics": {
+    "questions": 50,
+    "http_errors": 0,
+    "in_corpus": {
+      "n": 40,
+      "hit@1": 1.0,
+      "hit@8": 1.0,
+      "cites_expected": 1.0,
+      "facts_coverage": 0.946,
+      "refusal_heur": 0.05,
+      "escalated": 0.0,
+      "top_rerank_score": {
+        "min": 0.455,
+        "p50": 0.931,
+        "max": 0.996
+      }
+    },
+    "out_of_corpus": {
+      "n": 10,
+      "refusal_heur": 1.0,
+      "escalated": 1.0,
+      "top_rerank_score": {
+        "min": 0.0,
+        "p50": 0.005,
+        "max": 0.112
+      }
+    },
+    "latency_s": {
+      "total": {
+        "p50": 23.1,
+        "p95": 45.0
+      },
+      "retrieval": {
+        "p50": 16.3,
+        "p95": 16.7
+      },
+      "generation": {
+        "p50": 6.8,
+        "p95": 28.7
+      }
+    }
+  },
+  "judge": {
+    "judge_model": "claude-sonnet-5-5",
+    "in_correct": 30,
+    "in_correct_russian": 30,
+    "in_partial": 8,
+    "in_incorrect": 2,
+    "in_n": 40,
+    "out_refused_correctly": 10,
+    "out_refused_russian": 10,
+    "out_n": 10,
+    "hallucinations": 2,
+    "false_refusals": 0,
+    "cjk_answers": 0,
+    "stray_cites_script": 0,
+    "stray_cites_judge": 0
+  }
+}
