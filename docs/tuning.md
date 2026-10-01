@@ -1,5 +1,7 @@
 # Нагрузочный тюнинг инференса
 
+Русский · [English](tuning.en.md)
+
 Замеры на RTX 3070 Ti Laptop (8 ГБ, Ampere, TGP 150 Вт), vLLM 0.23,
 Qwen2.5-7B-Instruct-AWQ. Профиль запроса: вход/выход по 256 токенов,
 `--ignore-eos`, seed=0.
